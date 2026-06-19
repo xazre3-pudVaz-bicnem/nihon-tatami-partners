@@ -1,26 +1,189 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-kiji: #F5F0E8;
+  --color-kiji-dark: #EDE5D4;
+  --color-sumi: #1A1A1A;
+  --color-sumi-light: #2D2D2D;
+  --color-sumi-50: rgba(26,26,26,0.5);
+  --color-ai: #1A2E5A;
+  --color-ai-light: #2A4070;
+  --color-ai-50: rgba(26,46,90,0.5);
+  --color-matcha: #5C6B3E;
+  --color-matcha-light: #7A8C5C;
+  --color-hinoki: #8B6B4A;
+  --color-igusa: #6B8C5A;
+  --color-kincya: #B8860B;
+  --color-do: #9B5E3A;
+  --color-shiro: #FAFAF8;
+  --color-cloud: #F0EDE6;
+  --color-border: #D4CFC6;
+
+  --font-serif: 'Noto Serif JP', 'Yu Mincho', '游明朝', serif;
+  --font-sans: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+  --radius-card: 4px;
+  --radius-btn: 2px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: var(--color-shiro);
+    color: var(--color-sumi);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+  }
+
+  p {
+    letter-spacing: 0.04em;
+  }
+
+  ::selection {
+    background-color: var(--color-kiji-dark);
+    color: var(--color-ai);
+  }
+
+  img {
+    display: block;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* 畳の目パターン */
+  .tatami-pattern {
+    background-image:
+      linear-gradient(0deg, transparent 47%, rgba(100,85,60,0.06) 48%, rgba(100,85,60,0.06) 52%, transparent 53%),
+      linear-gradient(90deg, transparent 47%, rgba(100,85,60,0.06) 48%, rgba(100,85,60,0.06) 52%, transparent 53%);
+    background-size: 60px 60px;
+  }
+
+  /* 障子パターン */
+  .shoji-pattern {
+    background-image:
+      linear-gradient(0deg, transparent 49.5%, rgba(100,85,60,0.05) 50%, rgba(100,85,60,0.05) 50.5%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(100,85,60,0.05) 50%, rgba(100,85,60,0.05) 50.5%, transparent 51%);
+    background-size: 48px 48px;
+  }
+
+  /* 縦書き */
+  .writing-vertical {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  /* 金線 */
+  .gold-line {
+    background: linear-gradient(90deg, transparent 0%, var(--color-kincya) 30%, var(--color-kincya) 70%, transparent 100%);
+    height: 1px;
+    width: 100%;
+  }
+
+  .gold-accent {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-kincya), var(--color-do));
+  }
+
+  /* セクション余白 */
+  .section-py {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-py {
+      padding-top: 7rem;
+      padding-bottom: 7rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-py {
+      padding-top: 9rem;
+      padding-bottom: 9rem;
+    }
+  }
+
+  /* テキストバランス */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ホバー下線 */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* マスク */
+  .fade-mask-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  }
+}
+
+/* スクロールバー */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-kiji);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ai);
+  border-radius: 2px;
+}
+
+/* アニメーション */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleX {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
