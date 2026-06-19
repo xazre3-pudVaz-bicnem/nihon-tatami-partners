@@ -1,0 +1,713 @@
+// ============================================================
+// 日本畳パートナーズ — Prisma Schema
+// 本番DBはSupabase/PostgreSQL想定。
+// 現状はmock dataで動作し、将来的にこのスキーマで置き換える。
+// ============================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── Enums ────────────────────────────────────────────────
+
+enum UserRole {
+  user
+  provider
+  admin
+}
+
+enum ProviderStatus {
+  pending
+  active
+  suspended
+  rejected
+}
+
+enum ProviderPlanType {
+  free
+  standard
+  premium
+}
+
+enum ApplicationStatus {
+  draft
+  submitted
+  under_review
+  approved
+  rejected
+}
+
+enum VerificationStatus {
+  unverified
+  pending
+  verified
+  rejected
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+}
+
+enum BuildingType {
+  house
+  apartment
+  rental
+  office
+  store
+  ryokan
+  temple
+  other
+}
+
+enum ClientType {
+  individual
+  corporate
+  realestate
+  management
+  ryokan
+  temple
+  other
+}
+
+enum QuoteStatus {
+  open
+  responded
+  closed
+  accepted
+}
+
+enum ThreadStatus {
+  open
+  pending
+  closed
+}
+
+enum SenderRole {
+  user
+  provider
+  admin
+}
+
+enum ReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+enum NotificationType {
+  booking_new
+  booking_confirmed
+  booking_completed
+  message_new
+  review_new
+  review_reply
+  quote_response
+  system
+}
+
+enum ReportTargetType {
+  review
+  provider
+  message
+}
+
+enum ReportStatus {
+  open
+  under_review
+  resolved
+  dismissed
+}
+
+enum ArticleCategory {
+  column
+  news
+  guide
+  help
+}
+
+enum AdminRole {
+  super
+  editor
+  support
+}
+
+// ─── ユーザー ─────────────────────────────────────────────
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String
+  role          UserRole   @default(user)
+  phone         String?
+  prefecture    String?
+  city          String?
+  avatarUrl     String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
+  provider      Provider?
+  bookings      Booking[]
+  quoteRequests QuoteRequest[]
+  bulkQuotes    BulkQuoteRequest[]
+  reviews       Review[]
+  favorites     Favorite[]
+  threads       MessageThread[]
+  messages      Message[]
+  notifications Notification[]
+  reports       Report[]
+}
+
+// ─── 業者 ─────────────────────────────────────────────────
+
+model Provider {
+  id                 String         @id @default(cuid())
+  userId             String         @unique
+  user               User           @relation(fields: [userId], references: [id])
+  companyName        String
+  tradeName          String?
+  representativeName String
+  contactName        String?
+  phone              String
+  email              String
+  prefecture         String
+  city               String
+  address            String?
+  postalCode         String?
+  status             ProviderStatus @default(pending)
+  plan               ProviderPlanType @default(free)
+  isSample           Boolean        @default(false)
+  isVerified         Boolean        @default(false)
+  isPublished        Boolean        @default(false)
+  catchCopy          String
+  introduction       String
+  strengths          String[]
+  foundedYear        Int?
+  yearsOfExperience  Int?
+  licenses           String[]
+  associations       String[]
+  hasInsurance       Boolean        @default(false)
+  insuranceDetail    String?
+  acceptsCorporate   Boolean        @default(false)
+  acceptsRyokan      Boolean        @default(false)
+  acceptsTempleShrine Boolean       @default(false)
+  acceptsRealEstate  Boolean        @default(false)
+  serviceAreas       String[]
+  businessHours      String?
+  closedDays         String?
+  averageRating      Float          @default(0)
+  reviewCount        Int            @default(0)
+  completedCount     Int            @default(0)
+  responseTimeHours  Int?
+  canSameDayResponse Boolean        @default(false)
+  canWeekendResponse Boolean        @default(false)
+  canNightConsultation Boolean      @default(false)
+  acceptsCard        Boolean        @default(false)
+  hasFurnitureMove   Boolean        @default(false)
+  parkingFree        Boolean        @default(false)
+  canOnlineConsult   Boolean        @default(false)
+  hasEstimateFree    Boolean        @default(false)
+  thumbnailUrl       String?
+  rank               Int?
+  startingPrice      Int?
+  startingPriceUnit  String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+
+  application        ProviderApplication?
+  verification       ProviderVerification?
+  services           ProviderService[]
+  bookings           Booking[]
+  reviews            Review[]
+  favorites          Favorite[]
+  threads            MessageThread[]
+  workCases          WorkCase[]
+  photos             Photo[]
+  providerPlan       ProviderPlan?
+  bulkQuoteTargets   BulkQuoteTarget[]
+
+  @@index([prefecture, city])
+  @@index([status])
+}
+
+model ProviderApplication {
+  id          String            @id @default(cuid())
+  providerId  String            @unique
+  provider    Provider          @relation(fields: [providerId], references: [id])
+  companyName String
+  contactName String
+  phone       String
+  email       String
+  message     String?
+  status      ApplicationStatus @default(submitted)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  rejectReason String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ProviderVerification {
+  id            String             @id @default(cuid())
+  providerId    String             @unique
+  provider      Provider           @relation(fields: [providerId], references: [id])
+  documentType  String
+  documentUrl   String?
+  status        VerificationStatus @default(unverified)
+  verifiedAt    DateTime?
+  note          String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+// ─── サービス・カテゴリ ────────────────────────────────────
+
+model ServiceCategory {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  name        String
+  shortName   String
+  group       String
+  description String
+  priceFrom   Int?
+  unit        String?
+  icon        String?
+  popular     Boolean           @default(false)
+  seoTitle    String?
+  seoDescription String?
+  keywords    String[]
+  services    ProviderService[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ProviderService {
+  id           String           @id @default(cuid())
+  providerId   String
+  provider     Provider         @relation(fields: [providerId], references: [id])
+  categorySlug String
+  category     ServiceCategory  @relation(fields: [categorySlug], references: [slug])
+  title        String
+  subtitle     String?
+  description  String
+  catchCopy    String?
+  priceFrom    Int?
+  priceTo      Int?
+  priceLabel   String
+  travelFee    String?
+  parkingFee   String?
+  workingTimeHours Int?
+  workersCount Int?
+  serviceAreas String[]
+  availableDays String?
+  active       Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  prices       ServicePrice[]
+  bookings     Booking[]
+
+  @@index([providerId])
+  @@index([categorySlug])
+}
+
+model ServicePrice {
+  id        String          @id @default(cuid())
+  serviceId String
+  service   ProviderService @relation(fields: [serviceId], references: [id])
+  label     String
+  price     String
+  note      String?
+  isOption  Boolean         @default(false)
+  sortOrder Int             @default(0)
+}
+
+// ─── 地域 ─────────────────────────────────────────────────
+
+model Prefecture {
+  id     String @id @default(cuid())
+  name   String
+  slug   String @unique
+  cities City[]
+}
+
+model City {
+  id           String     @id @default(cuid())
+  prefectureId String
+  prefecture   Prefecture @relation(fields: [prefectureId], references: [id])
+  name         String
+  slug         String     @unique
+  postalCode   String?
+  lat          Float?
+  lng          Float?
+  description  String?
+  seoNote      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+// ─── 予約・見積 ────────────────────────────────────────────
+
+model Booking {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  providerId      String
+  provider        Provider      @relation(fields: [providerId], references: [id])
+  serviceId       String?
+  service         ProviderService? @relation(fields: [serviceId], references: [id])
+  status          BookingStatus @default(pending)
+  serviceCategory String
+  address         String
+  buildingType    BuildingType  @default(house)
+  tatamiFlex      Float?
+  roomCount       Int?
+  desiredDate1    DateTime?
+  desiredDate2    DateTime?
+  desiredDate3    DateTime?
+  hasParking      Boolean?
+  needFurnitureMove Boolean?
+  clientType      ClientType    @default(individual)
+  contactMethod   String?
+  notes           String?
+  estimatedPrice  Int?
+  confirmedDate   DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  photos          BookingPhoto[]
+  thread          MessageThread?
+  review          Review?
+
+  @@index([userId])
+  @@index([providerId])
+  @@index([status])
+}
+
+model BookingPhoto {
+  id        String  @id @default(cuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id])
+  url       String
+  caption   String?
+  createdAt DateTime @default(now())
+}
+
+model QuoteRequest {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  workType          String
+  address           String
+  desiredPeriod     String?
+  budget            String?
+  needsSiteVisit    Boolean?
+  clientType        ClientType  @default(individual)
+  notes             String?
+  status            QuoteStatus @default(open)
+  acceptedProviderId String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+model BulkQuoteRequest {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id])
+  workType      String
+  address       String
+  desiredPeriod String?
+  budget        String?
+  clientType    ClientType        @default(individual)
+  notes         String?
+  status        QuoteStatus       @default(open)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  targets       BulkQuoteTarget[]
+}
+
+model BulkQuoteTarget {
+  id           String           @id @default(cuid())
+  bulkQuoteId  String
+  bulkQuote    BulkQuoteRequest @relation(fields: [bulkQuoteId], references: [id])
+  providerId   String
+  provider     Provider         @relation(fields: [providerId], references: [id])
+  responded    Boolean          @default(false)
+  respondedAt  DateTime?
+  proposedPrice Int?
+
+  @@unique([bulkQuoteId, providerId])
+}
+
+// ─── メッセージ ────────────────────────────────────────────
+
+model MessageThread {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  providerId      String
+  provider        Provider     @relation(fields: [providerId], references: [id])
+  bookingId       String?      @unique
+  booking         Booking?     @relation(fields: [bookingId], references: [id])
+  quoteId         String?
+  status          ThreadStatus @default(open)
+  lastMessage     String?
+  lastMessageAt   DateTime?
+  unreadUser      Int          @default(0)
+  unreadProvider  Int          @default(0)
+  createdAt       DateTime     @default(now())
+
+  messages        Message[]
+
+  @@index([userId])
+  @@index([providerId])
+}
+
+model Message {
+  id            String        @id @default(cuid())
+  threadId      String
+  thread        MessageThread @relation(fields: [threadId], references: [id])
+  senderRole    SenderRole
+  senderId      String
+  sender        User          @relation(fields: [senderId], references: [id])
+  body          String
+  attachments   String[]
+  proposedPrice Int?
+  proposedDates String[]
+  readAt        DateTime?
+  createdAt     DateTime      @default(now())
+
+  @@index([threadId])
+}
+
+// ─── 口コミ ────────────────────────────────────────────────
+
+model Review {
+  id                  String       @id @default(cuid())
+  userId              String
+  user                User         @relation(fields: [userId], references: [id])
+  providerId          String
+  provider            Provider     @relation(fields: [providerId], references: [id])
+  serviceId           String?
+  bookingId           String?      @unique
+  booking             Booking?     @relation(fields: [bookingId], references: [id])
+  rating              Float
+  ratingQuality       Int?
+  ratingPrice         Int?
+  ratingSpeed         Int?
+  ratingCommunication Int?
+  title               String?
+  body                String
+  photos              String[]
+  usedService         String?
+  serviceDate         DateTime?
+  status              ReviewStatus @default(pending)
+  helpful             Int          @default(0)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  reply               ReviewReply?
+
+  @@index([providerId])
+  @@index([status])
+}
+
+model ReviewReply {
+  id         String   @id @default(cuid())
+  reviewId   String   @unique
+  review     Review   @relation(fields: [reviewId], references: [id])
+  providerId String
+  body       String
+  createdAt  DateTime @default(now())
+}
+
+// ─── お気に入り ────────────────────────────────────────────
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, providerId])
+}
+
+// ─── 写真・施工事例 ────────────────────────────────────────
+
+model WorkCase {
+  id               String    @id @default(cuid())
+  providerId       String
+  provider         Provider  @relation(fields: [providerId], references: [id])
+  providerName     String
+  title            String
+  categorySlug     String
+  categoryName     String
+  cityName         String?
+  prefectureName   String?
+  description      String
+  challenge        String?
+  proposal         String?
+  point            String?
+  beforePhotoUrl   String?
+  afterPhotoUrl    String?
+  tatamiFlex       Float?
+  estimatedCostLabel String?
+  workingDays      Int?
+  buildingType     BuildingType?
+  clientType       ClientType?
+  relatedCategorySlugs String[]
+  featured         Boolean   @default(false)
+  publishedAt      DateTime
+  createdAt        DateTime  @default(now())
+
+  photos           Photo[]
+
+  @@index([providerId])
+  @@index([categorySlug])
+}
+
+model Photo {
+  id         String    @id @default(cuid())
+  providerId String
+  provider   Provider  @relation(fields: [providerId], references: [id])
+  url        String
+  alt        String?
+  isBefore   Boolean   @default(false)
+  isAfter    Boolean   @default(false)
+  workCaseId String?
+  workCase   WorkCase? @relation(fields: [workCaseId], references: [id])
+  createdAt  DateTime  @default(now())
+}
+
+// ─── コンテンツ ────────────────────────────────────────────
+
+model Article {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  description  String
+  body         String
+  category     ArticleCategory @default(column)
+  tags         String[]
+  thumbnailUrl String?
+  authorName   String?
+  publishedAt  DateTime
+  updatedAt    DateTime        @updatedAt
+  readTime     Int?
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ─── 通知 ──────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  type      NotificationType
+  title     String
+  body      String
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+}
+
+// ─── 管理者・報告 ──────────────────────────────────────────
+
+model AdminUser {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String
+  role      AdminRole @default(support)
+  createdAt DateTime  @default(now())
+}
+
+model Report {
+  id         String           @id @default(cuid())
+  reporterId String
+  reporter   User             @relation(fields: [reporterId], references: [id])
+  targetType ReportTargetType
+  targetId   String
+  reason     String
+  detail     String?
+  status     ReportStatus     @default(open)
+  resolvedAt DateTime?
+  createdAt  DateTime         @default(now())
+
+  @@index([status])
+}
+
+// ─── プラン・ランキング・SEO ───────────────────────────────
+
+model Plan {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  priceMonthly    Int
+  features        String[]
+  maxServices     Int
+  maxPhotos       Int
+  topListing      Boolean          @default(false)
+  analyticsAccess Boolean          @default(false)
+  prioritySupport Boolean          @default(false)
+
+  providerPlans   ProviderPlan[]
+}
+
+model ProviderPlan {
+  id         String   @id @default(cuid())
+  providerId String   @unique
+  provider   Provider @relation(fields: [providerId], references: [id])
+  planId     String
+  plan       Plan     @relation(fields: [planId], references: [id])
+  startedAt  DateTime @default(now())
+  expiresAt  DateTime?
+  active     Boolean  @default(true)
+}
+
+model RankingRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  weightRating       Float @default(1)
+  weightReviewCount  Float @default(1)
+  weightCompleted    Float @default(1)
+  weightResponseTime Float @default(1)
+  weightPlan         Float @default(1)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PageSeo {
+  id              String   @id @default(cuid())
+  path            String   @unique
+  title           String
+  description     String
+  keywords        String[]
+  ogImageUrl      String?
+  noindex         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
