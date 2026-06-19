@@ -85,16 +85,37 @@ export default function Header() {
           {/* CTAボタン */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="/contact"
-              className="px-5 py-2.5 text-sm tracking-wide border border-kincya text-kincya hover:bg-kincya hover:text-white transition-all duration-300"
+              href="/quote/new"
+              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 ${
+                scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
+              }`}
             >
-              無料見積もり
+              一括見積もり
             </Link>
             <Link
-              href="/business"
-              className="px-5 py-2.5 text-sm tracking-wide bg-ai text-white hover:bg-ai-light transition-all duration-300"
+              href="/compare"
+              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 ${
+                scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
+              }`}
             >
-              法人のご相談
+              業者を比較
+            </Link>
+            <Link
+              href="/mypage"
+              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 flex items-center gap-1.5 ${
+                scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              マイページ
+            </Link>
+            <Link
+              href="/quote/new"
+              className="px-5 py-2.5 text-sm tracking-wide bg-kincya text-white hover:bg-do transition-all duration-300"
+            >
+              無料で見積もり
             </Link>
           </div>
 
@@ -154,18 +175,25 @@ export default function Header() {
             ))}
             <div className="pt-4 flex flex-col gap-3">
               <Link
-                href="/contact"
-                className="text-center py-3 border border-kincya text-kincya text-sm tracking-wide"
+                href="/quote/new"
+                className="text-center py-3 bg-kincya text-white text-sm tracking-wide"
                 onClick={() => setMobileOpen(false)}
               >
-                無料見積もり
+                無料で一括見積もり
               </Link>
               <Link
-                href="/business"
-                className="text-center py-3 bg-ai text-white text-sm tracking-wide"
+                href="/compare"
+                className="text-center py-3 border border-ai text-ai text-sm tracking-wide"
                 onClick={() => setMobileOpen(false)}
               >
-                法人のご相談
+                業者を比較する
+              </Link>
+              <Link
+                href="/mypage"
+                className="text-center py-3 border border-sumi/20 text-sumi/60 text-sm tracking-wide"
+                onClick={() => setMobileOpen(false)}
+              >
+                マイページ
               </Link>
               <a
                 href={`tel:${SITE_CONFIG.telRaw}`}

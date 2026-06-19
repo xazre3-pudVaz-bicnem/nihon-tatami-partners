@@ -7,6 +7,7 @@ import WorkCaseCard from "@/components/common/WorkCaseCard";
 import TrustBadges from "@/components/common/TrustBadges";
 import FAQSection from "@/components/common/FAQSection";
 import CityLinkGrid from "@/components/common/CityLinkGrid";
+import PriceCalculator from "@/components/common/PriceCalculator";
 import { POPULAR_CATEGORIES, CATEGORY_GROUP_LABELS, SERVICE_CATEGORIES } from "@/data/categories";
 import { getTopProviders, getHighRatedProviders, getNewProviders } from "@/data/providers";
 import { getRecentReviews } from "@/data/reviews";
@@ -99,6 +100,7 @@ export default function HomePage() {
       <TrustSection />
       <HighRatedSection providers={highRatedProviders} />
       <WorkCasesSection cases={featuredCases} />
+      <PriceCalculatorSection />
       <RecentReviewsSection reviews={recentReviews} />
       <NewProvidersSection providers={newProviders} />
       <ForBusinessSection />
@@ -551,6 +553,49 @@ function ForProviderSection() {
           <Link href="/pro" className="inline-flex items-center justify-center px-8 py-3 border border-sumi/30 text-sumi hover:border-ai hover:text-ai transition-all duration-300 text-sm tracking-wider">
             掲載の詳細を見る
           </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PriceCalculatorSection() {
+  return (
+    <section className="section-py bg-shiro">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row gap-10 items-start">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px w-8 bg-kincya" />
+              <span className="text-xs tracking-widest text-kincya uppercase">Price Calculator</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+              費用の目安を今すぐ確認
+            </h2>
+            <p className="text-sm text-sumi/60 leading-relaxed mb-6">
+              畳数と素材を選ぶだけで概算費用がわかります。実際の費用は業者に見積もりを依頼してご確認ください。
+            </p>
+            <div className="space-y-4">
+              {[
+                { title: "比較して選べる", desc: "料金・評価・対応内容を一覧で比較。納得できる業者を選べます。" },
+                { title: "最大5社に一括依頼", desc: "1回の入力で複数業者に同時見積もり。手間をかけずに相見積もりができます。" },
+                { title: "無料で使える", desc: "見積もり依頼・問い合わせは完全無料。費用は一切かかりません。" },
+              ].map((item) => (
+                <div key={item.title} className="flex items-start gap-3">
+                  <div className="w-5 h-5 bg-kincya/10 border border-kincya/30 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-kincya text-xs">✓</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-sumi">{item.title}</p>
+                    <p className="text-xs text-sumi/60 mt-0.5">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="w-full lg:w-[480px] shrink-0">
+            <PriceCalculator />
+          </div>
         </div>
       </div>
     </section>
