@@ -1,6 +1,7 @@
 import type { ColumnArticle } from "@/lib/types";
 
-export const COLUMN_ARTICLES: ColumnArticle[] = [
+// 全記事はサンプル（掲載イメージ）。isSample フラグを一律付与。
+const RAW_COLUMN_ARTICLES: ColumnArticle[] = [
   {
     slug: "tatami-omotegae-uragaeshi-shinchou",
     title: "畳の表替え・裏返し・新調の違いを徹底解説",
@@ -977,3 +978,8 @@ export const COLUMN_ARTICLES: ColumnArticle[] = [
     ],
   },
 ];
+
+export const COLUMN_ARTICLES: ColumnArticle[] = RAW_COLUMN_ARTICLES.map((a) => ({
+  ...a,
+  isSample: true,
+}));

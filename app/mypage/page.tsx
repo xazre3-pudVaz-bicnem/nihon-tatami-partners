@@ -3,7 +3,9 @@ import Link from "next/link";
 import { MOCK_BOOKINGS, MOCK_QUOTE_REQUESTS } from "@/data/bookings";
 import { MOCK_THREADS } from "@/data/messages";
 import StatusBadge from "@/components/common/StatusBadge";
-import { formatDate } from "@/lib/utils";
+import { getHighRatedProviders } from "@/data/providers";
+import { formatDate, formatRating } from "@/lib/utils";
+import SampleBadge from "@/components/common/SampleBadge";
 
 export const metadata: Metadata = {
   title: "マイページ | 日本畳パートナー",
@@ -19,6 +21,9 @@ export default function MypagePage() {
   const quotes = MOCK_QUOTE_REQUESTS.filter((q) => q.userId === MOCK_USER.id);
   const threads = MOCK_THREADS.filter((t) => t.userId === MOCK_USER.id);
   const unread = threads.reduce((acc, t) => acc + (t.unreadUser || 0), 0);
+  const recommended = getHighRatedProviders(3);
+  // 口コミ投稿待ち（施工完了したが口コミ未投稿の予約）
+  const pendingReviews = bookings.filter((b) => b.status === "completed");
 
   return (
     <div className="min-h-screen bg-cloud">
@@ -103,6 +108,59 @@ export default function MypagePage() {
                   ))}
                 </div>
               )}
+            </section>
+
+            {/* 口コミ投稿待ち */}
+            <section className="bg-white border border-border p-5">
+              <h2 className="text-base text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>口コミ投稿のお願い</h2>
+              {pendingReviews.length === 0 ? (
+                <p className="text-sm text-sumi/50 py-2">口コミ投稿待ちの施工はありません。</p>
+              ) : (
+                <div className="space-y-3">
+                  {pendingReviews.map((b) => (
+                    <div key={b.id} className="flex items-center justify-between border-b border-kiji pb-3 last:border-0 last:pb-0">
+                      <div>
+                        <p className="text-sm text-sumi">{b.serviceCategory}</p>
+                        <p className="text-xs text-sumi/50">{formatDate(b.createdAt)} ・ 施工完了</p>
+                      </div>
+                      <Link href="/mypage/reviews/new" className="text-xs bg-kincya text-white px-3 py-1.5 hover:bg-do transition-colors shrink-0">
+                        口コミを書く
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* お気に入り・最近見た業者 */}
+            <section className="bg-white border border-border p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base text-sumi" style={{ fontFamily: "var(--font-serif)" }}>お気に入り・最近見た業者</h2>
+                <Link href="/mypage/favorites" className="text-xs text-ai hover:underline">お気に入り一覧 →</Link>
+              </div>
+              <p className="text-sm text-sumi/50 py-2">
+                お気に入りに追加した業者や最近見た業者がここに表示されます。気になる業者は詳細ページのハートマークから登録できます。
+              </p>
+              <Link href="/search" className="inline-block text-xs text-ai border border-ai px-3 py-1.5 mt-2 hover:bg-ai hover:text-white transition-all">
+                業者を探す →
+              </Link>
+            </section>
+
+            {/* おすすめ業者 */}
+            <section className="bg-white border border-border p-5">
+              <h2 className="text-base text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>あなたへのおすすめ業者</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {recommended.map((p) => (
+                  <Link key={p.id} href={`/providers/${p.id}`} className="block border border-border p-3 hover:border-ai transition-colors">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm text-sumi font-medium truncate">{p.tradeName || p.companyName}</span>
+                      {p.isSample && <SampleBadge label={p.isSampleLabel || "掲載イメージ"} />}
+                    </div>
+                    <p className="text-xs text-sumi/50 mb-1">{p.city}</p>
+                    <p className="text-xs text-kincya">★ {formatRating(p.averageRating)}（{p.reviewCount}件）</p>
+                  </Link>
+                ))}
+              </div>
             </section>
           </div>
 

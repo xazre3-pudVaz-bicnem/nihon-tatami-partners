@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Provider } from "@/lib/types";
 import { formatRating, getResponseTimeLabel } from "@/lib/utils";
+import SampleBadge from "@/components/common/SampleBadge";
+import FavoriteButton from "@/components/common/FavoriteButton";
 
 interface Props {
   provider: Provider;
@@ -43,8 +45,13 @@ export default function ProviderListCard({ provider, rank, categorySlug }: Props
         <div className="absolute inset-0 tatami-pattern flex items-center justify-center">
           <span className="text-xs text-sumi/30">施工写真</span>
         </div>
+        {provider.isSample && (
+          <div className="absolute top-2 left-2 z-20">
+            <SampleBadge label={provider.isSampleLabel || "掲載イメージ"} />
+          </div>
+        )}
         {displayRank && displayRank <= 10 && (
-          <div className={`absolute top-0 left-0 text-xs font-bold px-3 py-1.5 z-10 ${rankBadge}`}>
+          <div className={`absolute bottom-0 left-0 text-xs font-bold px-3 py-1.5 z-10 ${rankBadge}`}>
             {displayRank}位
           </div>
         )}
@@ -52,7 +59,10 @@ export default function ProviderListCard({ provider, rank, categorySlug }: Props
 
       {/* 中央：業者情報 */}
       <div className="flex-1 p-4 min-w-0">
-        <p className="text-xs text-sumi/40 mb-0.5">{provider.city}</p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-xs text-sumi/40 mb-0.5">{provider.city}</p>
+          <FavoriteButton providerId={provider.id} className="-mt-0.5 shrink-0" />
+        </div>
         <h3 className="text-base text-sumi mb-1 leading-snug" style={{ fontFamily: "var(--font-serif)" }}>
           <Link href={detailHref} className="hover:text-ai transition-colors">
             {provider.tradeName || provider.companyName}
@@ -111,9 +121,9 @@ export default function ProviderListCard({ provider, rank, categorySlug }: Props
         <div className="space-y-1.5">
           <Link
             href={quoteHref}
-            className="block w-full text-center text-xs bg-kincya text-white py-2.5 hover:bg-do transition-colors font-medium"
+            className="block w-full text-center text-sm bg-kincya text-white py-3 hover:bg-do transition-colors font-bold shadow-sm"
           >
-            見積依頼
+            無料で見積依頼
           </Link>
           <Link
             href={detailHref}

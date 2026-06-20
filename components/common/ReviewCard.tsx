@@ -1,5 +1,6 @@
 import type { Review } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/utils";
+import SampleBadge from "@/components/common/SampleBadge";
 
 interface Props {
   review: Review;
@@ -43,7 +44,10 @@ export default function ReviewCard({ review, showProviderReply = true, variant =
             {review.userName.charAt(0)}
           </div>
           <div>
-            <p className="text-sm font-medium text-sumi">{review.userName}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-sumi">{review.userName}</p>
+              {review.isSample && <SampleBadge label={review.sampleLabel || "掲載イメージ"} />}
+            </div>
             <p className="text-xs text-sumi/40">{formatDate(review.createdAt)}</p>
           </div>
         </div>

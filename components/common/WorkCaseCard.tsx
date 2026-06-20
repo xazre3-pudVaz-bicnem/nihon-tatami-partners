@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { WorkCase } from "@/lib/types";
+import SampleBadge from "@/components/common/SampleBadge";
 
 interface Props {
   workCase: WorkCase;
@@ -33,6 +34,11 @@ export default function WorkCaseCard({ workCase, variant = "default" }: Props) {
         <div className="relative bg-kiji overflow-hidden border-r border-border">
           <div className="absolute inset-0 tatami-pattern" />
           <div className="absolute bottom-1 left-2 text-xs text-sumi/30">施工前</div>
+          {workCase.isSample && (
+            <div className="absolute top-2 left-2 z-10">
+              <SampleBadge label={workCase.sampleLabel || "掲載イメージ"} />
+            </div>
+          )}
         </div>
         <div className="relative bg-kiji/60 overflow-hidden">
           <div className="absolute inset-0 tatami-pattern opacity-50" />

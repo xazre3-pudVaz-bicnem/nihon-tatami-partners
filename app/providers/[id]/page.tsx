@@ -9,18 +9,38 @@ import WorkCaseCard from "@/components/common/WorkCaseCard";
 import BookingForm from "@/components/common/BookingForm";
 import QuoteForm from "@/components/common/QuoteForm";
 import ServiceListingCard from "@/components/common/ServiceListingCard";
-import { getProviderById, MOCK_PROVIDERS } from "@/data/providers";
+import { getProviderById, getRelatedProviders } from "@/data/providers";
 import { getReviewsByProviderId } from "@/data/reviews";
-import { getWorkCasesByCategory } from "@/data/workcases";
+import { getWorkCasesByProviderId } from "@/data/workcases";
 import { getServicesByProviderId } from "@/data/provider-services";
 import { formatRating } from "@/lib/utils";
+import SampleBadge from "@/components/common/SampleBadge";
+
+// 「上限○万円」「最大○万円」など断定的な補償額表記を除去
+function sanitizeInsurance(detail?: string): string | undefined {
+  if (!detail) return detail;
+  return detail.replace(/（?(上限|最大)[0-9０-９,，]+万円）?/g, "（申告情報）").trim();
+}
+
+const PROVIDER_FAQS = [
+  { q: "料金はいつ確定しますか？", a: "現地確認または写真確認のうえ、正式なお見積もりで金額が確定します。見積もり内容にご納得いただいてからのご依頼となります。" },
+  { q: "写真だけで見積もれますか？", a: "写真見積もりに対応している業者であれば、概算のお見積もりが可能です。最終金額は現地確認後に確定する場合があります。" },
+  { q: "家具の移動は必要ですか？", a: "家具移動に対応している業者もあります。対応可否や追加費用の有無は、見積もり時にご確認ください。" },
+  { q: "追加費用はありますか？", a: "家具移動・古畳処分・出張費などで追加費用が発生する場合があります。条件を事前に書面でご確認ください。" },
+  { q: "古い畳は処分してもらえますか？", a: "古畳処分に対応している業者であれば回収可能です。処分費用がかかる場合があります。" },
+  { q: "法人対応・請求書払いはできますか？", a: "法人対応・インボイス対応の有無は業者により異なります。対応欄をご確認のうえ、見積もり時にご相談ください。" },
+  { q: "見積もりは無料ですか？", a: "無料見積もりに対応している業者が多くありますが、出張範囲などにより異なる場合があります。各業者にご確認ください。" },
+  { q: "支払い方法は選べますか？", a: "現金・振込・カードなど、対応する支払い方法は業者により異なります。事前にご確認ください。" },
+  { q: "保険には加入していますか？", a: "損害賠償保険の加入状況は業者の申告情報として掲載しています。詳細は各業者に直接ご確認ください。" },
+  { q: "工事中の立ち会いは必要ですか？", a: "立ち会いの要否は工事内容によります。鍵の受け渡し方法なども含め、業者とご相談ください。" },
+];
 
 interface Props {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ tab?: string }>;
 }
 
-type Tab = "about" | "services" | "reviews" | "works" | "booking" | "quote";
+type Tab = "about" | "services" | "reviews" | "works" | "booking" | "quote" | "faq";
 
 export default function ProviderDetailPage({ params, searchParams }: Props) {
   const { id } = use(params);
@@ -30,8 +50,10 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
   if (!provider) notFound();
 
   const reviews = getReviewsByProviderId(id);
-  const workCases = getWorkCasesByCategory(id);
+  const workCases = getWorkCasesByProviderId(id);
   const services = getServicesByProviderId(id);
+  const relatedProviders = getRelatedProviders(provider, 3);
+  const insuranceDisplay = sanitizeInsurance(provider.insuranceDetail);
   const name = provider.tradeName || provider.companyName;
   const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(provider.averageRating));
 
@@ -59,7 +81,6 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
     "@type": "LocalBusiness",
     name,
     description: provider.catchCopy,
-    telephone: provider.phone,
     address: {
       "@type": "PostalAddress",
       addressRegion: provider.prefecture,
@@ -78,6 +99,7 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
     { key: "services", label: "提供サービス", count: services.length },
     { key: "reviews", label: "口コミ", count: reviews.length },
     { key: "works", label: "施工事例", count: workCases.length },
+    { key: "faq", label: "よくある質問" },
   ];
 
   return (
@@ -95,6 +117,18 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
             ]} />
           </div>
         </div>
+
+        {/* 掲載イメージバナー */}
+        {provider.isSample && (
+          <div className="bg-kiji border-b border-sumi/10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+              <p className="text-xs text-sumi/70 flex items-center gap-2">
+                <SampleBadge label={provider.isSampleLabel || "掲載イメージ"} />
+                このページは掲載イメージです。実際の業者情報は準備中です。表示内容はサンプルのため、実在する業者・連絡先ではありません。
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* 業者ヘッダー */}
         <div className="bg-white border-b border-border">
@@ -270,7 +304,7 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
                           { label: "創業", value: provider.foundedYear ? `${provider.foundedYear}年（職人歴 ${provider.yearsOfExperience}年）` : "—" },
                           { label: "営業時間", value: provider.businessHours || "—" },
                           { label: "定休日", value: provider.closedDays || "—" },
-                          { label: "電話", value: provider.phone },
+                          { label: "連絡方法", value: "お問い合わせフォーム・見積依頼から（電話番号は掲載していません）" },
                           { label: "平均応答時間", value: provider.responseTimeHours ? `${provider.responseTimeHours}時間以内` : "—" },
                           { label: "対応エリア", value: provider.serviceAreas.join("、") },
                         ].map((row) => (
@@ -281,6 +315,9 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
                         ))}
                       </tbody>
                     </table>
+                    <p className="text-xs text-sumi/40 mt-4 leading-relaxed">
+                      掲載情報は業者の申告に基づいています。資格・保険の詳細は各業者にご確認ください。
+                    </p>
                   </section>
 
                   {/* 資格・保険 */}
@@ -314,8 +351,8 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
                       <div>
                         <h3 className="text-xs text-sumi/50 mb-2">損害賠償保険</h3>
                         {provider.hasInsurance ? (
-                          <p className="text-sm text-igusa">{provider.insuranceDetail || "加入済み"}</p>
-                        ) : <p className="text-xs text-sumi/40">未加入</p>}
+                          <p className="text-sm text-igusa">{insuranceDisplay || "損害賠償保険加入（申告情報）"}</p>
+                        ) : <p className="text-xs text-sumi/40">情報なし</p>}
                       </div>
                     </div>
                   </section>
@@ -440,6 +477,59 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
                 </div>
               )}
 
+              {/* ── よくある質問タブ ── */}
+              {activeTab === "faq" && (
+                <section className="bg-white border border-border p-6">
+                  <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>よくある質問</h2>
+                  <div className="divide-y divide-kiji">
+                    {PROVIDER_FAQS.map((faq) => (
+                      <details key={faq.q} className="group py-3">
+                        <summary className="cursor-pointer text-sm text-sumi font-medium flex items-start gap-2 list-none">
+                          <span className="text-kincya shrink-0">Q.</span>
+                          <span className="flex-1">{faq.q}</span>
+                          <span className="text-sumi/30 group-open:rotate-180 transition-transform shrink-0">▾</span>
+                        </summary>
+                        <p className="text-sm text-sumi/70 leading-relaxed mt-2 pl-6">{faq.a}</p>
+                      </details>
+                    ))}
+                  </div>
+                  <p className="text-xs text-sumi/40 mt-4">
+                    ※ 回答は一般的な目安です。実際の対応・費用は業者により異なります。見積もり時にご確認ください。
+                  </p>
+                </section>
+              )}
+
+              {/* 関連業者（同エリア） */}
+              {relatedProviders.length > 0 && (
+                <section className="mt-8">
+                  <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                    同じエリアの業者
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {relatedProviders.map((rp) => {
+                      const rpName = rp.tradeName || rp.companyName;
+                      return (
+                        <Link
+                          key={rp.id}
+                          href={`/providers/${rp.id}`}
+                          className="block bg-white border border-border p-4 hover:border-ai transition-colors"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm text-sumi font-medium truncate">{rpName}</span>
+                            {rp.isSample && <SampleBadge label={rp.isSampleLabel || "掲載イメージ"} />}
+                          </div>
+                          <p className="text-xs text-sumi/50 mb-2">{rp.city}</p>
+                          <div className="flex items-center gap-1 text-xs">
+                            <span className="text-kincya">★ {formatRating(rp.averageRating)}</span>
+                            <span className="text-sumi/40">（{rp.reviewCount}件）</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
             </div>
 
             {/* 右サイドバー */}
@@ -459,24 +549,24 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
                 <BookingForm providerId={provider.id} />
                 <QuoteForm providerId={provider.id} />
 
-                {/* 電話・直接連絡 */}
+                {/* 連絡方法の案内 */}
                 <div className="bg-white border border-border p-4">
-                  <p className="text-xs text-sumi/50 mb-3">直接連絡する</p>
-                  <a href={`tel:${provider.phone}`} className="flex items-center gap-2 text-sm text-sumi hover:text-ai transition-colors mb-1">
-                    <span className="text-ai">TEL</span> {provider.phone}
-                  </a>
-                  <p className="text-xs text-sumi/40">{provider.businessHours}</p>
+                  <p className="text-xs text-sumi/50 mb-2">この業者への連絡方法</p>
+                  <p className="text-sm text-sumi/80 leading-relaxed">
+                    お問い合わせ・ご相談は、上記の見積依頼・予約リクエストフォームからお送りください。電話番号は掲載していません。
+                  </p>
+                  <p className="text-xs text-sumi/40 mt-2">受付時間：{provider.businessHours || "—"}</p>
                 </div>
 
-                {/* 保証バナー */}
+                {/* サポートバナー */}
                 <Link href="/guarantee" className="block bg-igusa/5 border border-igusa/20 p-4 hover:bg-igusa/10 transition-colors">
                   <div className="flex items-center gap-3">
                     <svg className="w-8 h-8 text-igusa shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     <div>
-                      <p className="text-xs font-medium text-igusa">損害賠償補償制度</p>
-                      <p className="text-xs text-sumi/60 mt-0.5">当サービスのネット予約なら最大10万円の補償あり</p>
+                      <p className="text-xs font-medium text-igusa">トラブル時のサポート</p>
+                      <p className="text-xs text-sumi/60 mt-0.5">お困りごとが発生した際のご相談の流れをご案内します</p>
                     </div>
                   </div>
                 </Link>
@@ -492,6 +582,23 @@ export default function ProviderDetailPage({ params, searchParams }: Props) {
             </div>
           </div>
         </div>
+
+        {/* スマホ下部固定CTA */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border px-4 py-3 grid grid-cols-2 gap-2">
+          <button
+            onClick={() => { setActiveTab("quote"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="text-center py-3 bg-kincya text-white text-sm tracking-wide"
+          >
+            見積依頼
+          </button>
+          <button
+            onClick={() => { setActiveTab("booking"); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="text-center py-3 border border-ai text-ai text-sm tracking-wide"
+          >
+            予約リクエスト
+          </button>
+        </div>
+        <div className="lg:hidden h-16" aria-hidden />
       </div>
     </>
   );

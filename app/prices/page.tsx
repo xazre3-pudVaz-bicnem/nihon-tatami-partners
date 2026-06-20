@@ -59,6 +59,17 @@ export default function PricesPage() {
     { question: "見積もりより高くなることはありますか？", answer: "畳床の損傷が見つかった場合や、特殊サイズ・家具移動などで追加費用が出ることがあります。見積もり時に追加費用の条件を確認しておきましょう。" },
     { question: "なぜ業者によって料金が違うのですか？", answer: "使用する素材のグレード、工場の規模、出張範囲、サービス内容（家具移動・古畳処分の有無）などで差が出ます。料金だけでなく内訳とサービス範囲を比較しましょう。" },
     { question: "安すぎる業者は大丈夫ですか？", answer: "極端に安い場合、素材のグレードが低い、追加費用が後から発生するなどのケースがあります。内訳が明確で口コミ評価の高い業者を選ぶと安心です。" },
+    { question: "裏返しはいくらくらいですか？", answer: "1枚あたり2,500円〜が目安です。新調・表替えから3〜5年で、畳表の裏面がまだきれいな場合に選べます。1枚につき1回までです。" },
+    { question: "古い畳の処分費用はかかりますか？", answer: "新調時などに古畳の処分が必要になると、1枚あたり500円〜の処分費がかかる場合があります。見積もりに含まれるか確認しましょう。" },
+    { question: "写真を送るだけで見積もりできますか？", answer: "写真見積もりに対応している業者であれば概算が可能です。最終金額は現地確認後に確定する場合があります。" },
+  ];
+
+  // 畳数別の目安シミュレーション（表替え・国産い草普及品 5,800円/枚で試算）
+  const roomSim = [
+    { room: "4.5畳", omotegae: "26,100円〜", uragaeshi: "11,250円〜", shinchou: "54,000円〜" },
+    { room: "6畳", omotegae: "34,800円〜", uragaeshi: "15,000円〜", shinchou: "72,000円〜" },
+    { room: "8畳", omotegae: "46,400円〜", uragaeshi: "20,000円〜", shinchou: "96,000円〜" },
+    { room: "10畳", omotegae: "58,000円〜", uragaeshi: "25,000円〜", shinchou: "120,000円〜" },
   ];
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -129,6 +140,38 @@ export default function PricesPage() {
             </div>
           </section>
 
+          {/* 畳数別シミュレーション */}
+          <section className="mb-10">
+            <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+              畳数別の料金目安シミュレーション
+            </h2>
+            <div className="bg-white border border-border overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-sumi/50 text-xs bg-kiji/30">
+                    <th className="py-3 px-4">部屋の広さ</th>
+                    <th className="py-3 px-4 whitespace-nowrap">表替え</th>
+                    <th className="py-3 px-4 whitespace-nowrap">裏返し</th>
+                    <th className="py-3 px-4 whitespace-nowrap">新調</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roomSim.map((r) => (
+                    <tr key={r.room} className="border-b border-border/60 last:border-0">
+                      <td className="py-3 px-4 text-sumi font-medium whitespace-nowrap">{r.room}</td>
+                      <td className="py-3 px-4 text-do whitespace-nowrap">{r.omotegae}</td>
+                      <td className="py-3 px-4 text-do whitespace-nowrap">{r.uragaeshi}</td>
+                      <td className="py-3 px-4 text-do whitespace-nowrap">{r.shinchou}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-sumi/40 mt-2">
+              ※ 表替えは国産い草普及品（5,800円/枚）、裏返しは2,500円/枚、新調は12,000円/枚で試算した目安です。素材・状態により変動します。
+            </p>
+          </section>
+
           {/* 追加費用が出るケース */}
           <section className="mb-10 bg-white border border-border p-6">
             <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
@@ -193,9 +236,14 @@ export default function PricesPage() {
             <p className="text-sm text-white/60 mb-6 max-w-xl mx-auto">
               料金は現場の状況・素材・枚数で変わります。複数業者に無料見積もりを依頼して比較しましょう。
             </p>
-            <Link href="/search" className="inline-block bg-kincya text-white px-8 py-3.5 text-sm hover:bg-do transition-colors">
-              業者を探して見積もり依頼
-            </Link>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link href="/search" className="inline-block bg-kincya text-white px-8 py-3.5 text-sm hover:bg-do transition-colors">
+                業者を探して見積もり依頼
+              </Link>
+              <Link href="/bulk-quote" className="inline-block border border-white/40 text-white px-8 py-3.5 text-sm hover:border-white transition-colors">
+                一括見積もりを依頼
+              </Link>
+            </div>
           </section>
         </div>
       </div>

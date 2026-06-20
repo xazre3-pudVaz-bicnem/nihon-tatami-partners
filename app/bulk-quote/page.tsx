@@ -34,6 +34,12 @@ export default function BulkQuotePage() {
     { question: "何社まで依頼できますか？", answer: "最大5社まで同時に見積もり依頼ができます。比較しやすい3社前後がおすすめです。" },
     { question: "しつこい営業はありませんか？", answer: "ご依頼いただいた業者からのみ連絡が届きます。希望する連絡方法を指定でき、不要な場合はやり取りを終了できます。" },
     { question: "法人・管理会社でも使えますか？", answer: "ご利用いただけます。複数物件の原状回復など、法人向けの一括依頼にも対応する業者が掲載されています。" },
+    { question: "写真がなくても依頼できますか？", answer: "写真がなくても依頼できます。現場写真を添えると、より具体的な見積もりが受け取りやすくなります。最終金額は現地確認後に確定する場合があります。" },
+  ];
+
+  const targetServices = [
+    "畳の表替え", "畳の裏返し", "畳の新調", "琉球畳・縁なし畳", "和紙畳・樹脂畳",
+    "ふすま張替え", "障子張替え", "和室リフォーム", "賃貸原状回復", "店舗・施設の畳",
   ];
   const faqJsonLd = {
     "@context": "https://schema.org",
@@ -85,6 +91,20 @@ export default function BulkQuotePage() {
                   <h3 className="text-sm text-sumi mt-1 mb-1" style={{ fontFamily: "var(--font-serif)" }}>{s.title}</h3>
                   <p className="text-xs text-sumi/60 leading-relaxed">{s.desc}</p>
                 </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 対象サービス */}
+          <section className="mb-12">
+            <h2 className="text-xl text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+              一括見積もりの対象サービス
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {targetServices.map((s) => (
+                <span key={s} className="text-sm bg-white border border-border px-4 py-2 text-sumi/70">
+                  {s}
+                </span>
               ))}
             </div>
           </section>
