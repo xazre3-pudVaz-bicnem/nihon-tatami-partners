@@ -73,8 +73,8 @@ export interface Provider {
   tradeName?: string;
   representativeName: string;
   contactName?: string;
-  phone: string;
-  email: string;
+  phone?: string;
+  email?: string;
   prefecture: string;
   city: string;
   address?: string;
@@ -115,6 +115,16 @@ export interface Provider {
   rank?: number;
   startingPrice?: number;
   startingPriceUnit?: string;
+  // ─── サンプル / 公開状態フラグ ───
+  isSample?: boolean;           // サンプルデータフラグ
+  isSampleLabel?: string;       // "掲載イメージ" など
+  isVerified?: boolean;         // 本人確認済み
+  isPublished?: boolean;        // 公開中
+  acceptsInvoice?: boolean;     // インボイス対応
+  acceptsPropertyManagement?: boolean; // 管理会社対応
+  acceptsStore?: boolean;       // 店舗対応
+  hasOldTatamiDisposal?: boolean; // 古畳処分対応
+  hasPhotoEstimate?: boolean;   // 写真見積対応
   createdAt: string;
   updatedAt: string;
 }
@@ -269,6 +279,10 @@ export interface Review {
   status: ReviewStatus;
   reply?: ReviewReply;
   helpful?: number;
+  isSample?: boolean;
+  sampleLabel?: string;
+  serviceCategory?: string;
+  buildingType?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -327,6 +341,8 @@ export interface WorkCase {
   clientType?: ClientType;
   relatedCategorySlugs?: string[];
   featured?: boolean;
+  isSample?: boolean;
+  sampleLabel?: string;
   publishedAt: string;
   createdAt: string;
 }
@@ -411,6 +427,7 @@ export interface Article {
   publishedAt: string;
   updatedAt?: string;
   readTime?: number;
+  isSample?: boolean;
 }
 
 export interface FAQ {
@@ -461,6 +478,7 @@ export interface ColumnArticle {
   body: string;
   faqs?: FAQ[];
   relatedSlugs?: string[];
+  isSample?: boolean;
 }
 
 export interface PriceItem {
@@ -511,7 +529,14 @@ export interface SearchParams {
   city?: string;
   tatamiFlex?: number;
   period?: string;
-  sortBy?: "recommended" | "rating" | "price_asc" | "review_count" | "newest";
+  sortBy?:
+    | "recommended"
+    | "rating"
+    | "review_count"
+    | "price_asc"
+    | "newest"
+    | "response_time"
+    | "completed_count";
   priceMax?: number;
   rating?: number;
   sameDayResponse?: boolean;

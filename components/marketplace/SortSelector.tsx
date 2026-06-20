@@ -7,6 +7,8 @@ const OPTIONS: { value: string; label: string }[] = [
   { value: "rating", label: "評価が高い順" },
   { value: "review_count", label: "口コミが多い順" },
   { value: "price_asc", label: "料金が安い順" },
+  { value: "response_time", label: "返信が早い順" },
+  { value: "completed_count", label: "施工実績が多い順" },
   { value: "newest", label: "新着順" },
 ];
 

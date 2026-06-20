@@ -7,7 +7,14 @@ export interface RawSearchParams {
   [key: string]: string | string[] | undefined;
 }
 
-export type SortKey = "recommended" | "rating" | "review_count" | "price_asc" | "newest";
+export type SortKey =
+  | "recommended"
+  | "rating"
+  | "review_count"
+  | "price_asc"
+  | "newest"
+  | "response_time"
+  | "completed_count";
 
 const get = (sp: RawSearchParams, key: string): string | undefined => {
   const v = sp[key];
@@ -66,6 +73,12 @@ export function filterAndSortProviders(sp: RawSearchParams): {
       break;
     case "newest":
       result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      break;
+    case "response_time":
+      result.sort((a, b) => (a.responseTimeHours ?? 9e9) - (b.responseTimeHours ?? 9e9));
+      break;
+    case "completed_count":
+      result.sort((a, b) => b.completedCount - a.completedCount);
       break;
     default:
       result.sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));

@@ -1,8 +1,8 @@
 export default function TrustBadges() {
   const badges = [
     {
-      title: "掲載業者審査済み",
-      description: "すべての掲載業者は資格・保険・実績を確認しています",
+      title: "掲載時に基本情報を確認",
+      description: "掲載申請時に会社情報・連絡先・対応サービスの確認を行います",
     },
     {
       title: "口コミで比較",

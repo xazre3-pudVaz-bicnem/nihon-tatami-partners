@@ -114,14 +114,29 @@ export default async function SearchPage({ searchParams }: Props) {
             </div>
 
             {providers.length === 0 ? (
-              <div className="text-center py-20 bg-white border border-border">
-                <p className="text-sumi/50 mb-4">条件に合う業者が見つかりませんでした</p>
-                <Link
-                  href="/search"
-                  className="inline-block text-sm text-ai border border-ai px-4 py-2 hover:bg-ai hover:text-white transition-all"
-                >
-                  条件をリセット
-                </Link>
+              <div className="text-center py-16 bg-white border border-border px-4">
+                <p className="text-sumi/60 mb-1">条件に合う業者が見つかりませんでした</p>
+                <p className="text-xs text-sumi/40 mb-6">条件を広げるか、一括見積もりで複数業者に相談できます</p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="/search"
+                    className="inline-block text-sm text-ai border border-ai px-4 py-2.5 hover:bg-ai hover:text-white transition-all"
+                  >
+                    条件をリセット
+                  </Link>
+                  <Link
+                    href={`/search${categorySlug ? `?category=${categorySlug}` : ""}`}
+                    className="inline-block text-sm text-sumi border border-border px-4 py-2.5 hover:border-sumi transition-all"
+                  >
+                    条件を広げる（近隣エリアも表示）
+                  </Link>
+                  <Link
+                    href="/bulk-quote"
+                    className="inline-block text-sm bg-kincya text-white px-4 py-2.5 hover:bg-do transition-all font-medium"
+                  >
+                    一括見積もりを依頼
+                  </Link>
+                </div>
               </div>
             ) : (
               <>
@@ -144,10 +159,53 @@ export default async function SearchPage({ searchParams }: Props) {
                 畳の表替えや新調、ふすま・障子の張替え、和室リフォーム、賃貸の原状回復まで幅広く対応。
                 気になる業者には無料で見積もりを依頼でき、複数社を比較して納得のいく1社を選べます。
               </p>
-              <p className="text-sm text-sumi/70 leading-relaxed">
+              <p className="text-sm text-sumi/70 leading-relaxed mb-6">
                 業者を選ぶ際は、料金だけでなく口コミ評価・施工実績・保有資格・保険加入の有無を確認しましょう。
                 一級畳製作技能士の在籍や損害賠償保険への加入は、安心して依頼できる目安のひとつです。
               </p>
+
+              {/* 表替え・裏返し・新調の違い */}
+              <h3 className="text-base text-sumi mb-2 font-medium">表替え・裏返し・新調の違い</h3>
+              <ul className="text-sm text-sumi/70 leading-relaxed mb-6 space-y-1.5">
+                <li><span className="text-kincya">●</span> <strong>表替え</strong>：畳床はそのままに、畳表（ゴザ）を新しく張り替える工事。色あせ・毛羽立ちが気になってきたら。</li>
+                <li><span className="text-kincya">●</span> <strong>裏返し</strong>：今の畳表を裏返して再利用する工事。新調・表替えから3〜5年で、まだ裏面がきれいな場合に。1枚につき1回だけ。</li>
+                <li><span className="text-kincya">●</span> <strong>新調</strong>：畳床から新しく作り替える工事。15〜20年以上、踏むと沈む・床が傷んでいる場合に。</li>
+              </ul>
+
+              {/* 業者選びの注意点 */}
+              <h3 className="text-base text-sumi mb-2 font-medium">埼玉県で業者を選ぶときの5つの注意点</h3>
+              <ol className="text-sm text-sumi/70 leading-relaxed mb-6 space-y-1.5 list-decimal pl-5">
+                <li>見積もりの内訳（材料費・施工費・出張費・古畳処分費）を確認する</li>
+                <li>追加費用が発生する条件を事前に書面で確認する</li>
+                <li>口コミ評価と施工実績の件数をあわせて見る</li>
+                <li>保有資格・損害賠償保険の加入状況を確認する（申告情報のため詳細は各業者へ）</li>
+                <li>対応エリア・希望時期・即日対応の可否を確認する</li>
+              </ol>
+
+              {/* 料金相場の表 */}
+              <h3 className="text-base text-sumi mb-2 font-medium">料金相場の目安（1枚あたり）</h3>
+              <div className="overflow-x-auto mb-3">
+                <table className="w-full text-sm border border-border">
+                  <thead>
+                    <tr className="bg-kiji/60 text-sumi/70">
+                      <th className="text-left px-3 py-2 font-medium border-b border-border">工事</th>
+                      <th className="text-left px-3 py-2 font-medium border-b border-border">目安料金</th>
+                      <th className="text-left px-3 py-2 font-medium border-b border-border">備考</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sumi/70">
+                    <tr className="border-b border-kiji"><td className="px-3 py-2">表替え</td><td className="px-3 py-2 text-do">3,200円〜</td><td className="px-3 py-2 text-xs">素材（い草・和紙・琉球）で変動</td></tr>
+                    <tr className="border-b border-kiji"><td className="px-3 py-2">裏返し</td><td className="px-3 py-2 text-do">2,500円〜</td><td className="px-3 py-2 text-xs">1枚につき1回まで</td></tr>
+                    <tr><td className="px-3 py-2">新調</td><td className="px-3 py-2 text-do">8,000円〜</td><td className="px-3 py-2 text-xs">畳床・い草のグレードで変動</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-sumi/40 mb-4">※ あくまで一般的な目安です。正確な料金は各業者の見積もりをご確認ください。</p>
+
+              <div className="flex flex-wrap gap-3">
+                <Link href="/prices" className="text-sm text-ai hover:underline">料金相場をもっと詳しく →</Link>
+                <Link href="/articles" className="text-sm text-ai hover:underline">畳のコラムを読む →</Link>
+              </div>
             </section>
 
             {/* 関連カテゴリ */}
@@ -186,7 +244,22 @@ export default async function SearchPage({ searchParams }: Props) {
           {
             question: "対応エリア外でも依頼できますか？",
             answer:
-              "業者ごとに対応エリアが設定されています。絞り込みで市区町村を指定すると、そのエリアに対応する業者だけを表示できます。",
+              "業者ごとに対応エリアが設定されています。絞り込みで市区町村を指定すると、そのエリアに対応する業者だけを表示できます。エリア外でも相談に応じる業者もあります。",
+          },
+          {
+            question: "裏返しと表替えはどちらを選べばよいですか？",
+            answer:
+              "新調や前回の表替えから3〜5年で、畳表の裏面がまだきれいなら裏返しが目安です。表面の傷みが進んでいる場合や、すでに裏返し済みの場合は表替えになります。判断に迷う場合は現地確認を依頼してください。",
+          },
+          {
+            question: "古い畳の処分もお願いできますか？",
+            answer:
+              "新調時など、古畳の処分に対応している業者があります。処分費用がかかる場合があるため、見積もり時にご確認ください。",
+          },
+          {
+            question: "法人・管理会社からの依頼もできますか？",
+            answer:
+              "不動産会社・管理会社・賃貸オーナー向けに、請求書払いや複数物件の一括対応に応じる業者が掲載されています。法人・施設向けページもあわせてご覧ください。",
           },
         ]}
         title="業者選びに関するよくある質問"

@@ -43,18 +43,18 @@ export default function CTASection({
           </Link>
           {showBusiness && (
             <Link
-              href="/business"
+              href="/for-business"
               className="px-8 py-4 border border-white/40 text-white hover:border-white transition-all duration-300 text-sm tracking-wider"
             >
               法人・管理会社の相談
             </Link>
           )}
-          <a
-            href={`tel:${SITE_CONFIG.telRaw}`}
+          <Link
+            href="/bulk-quote"
             className="px-8 py-4 bg-white text-ai hover:bg-kiji transition-all duration-300 text-sm tracking-wider"
           >
-            {SITE_CONFIG.tel}
-          </a>
+            一括見積もりを依頼
+          </Link>
         </div>
 
         <p className="text-white/40 text-xs mt-6">{SITE_CONFIG.hours}</p>

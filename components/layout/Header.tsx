@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { SITE_CONFIG, NAV_ITEMS } from "@/data/site";
+import { NAV_ITEMS } from "@/data/site";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -195,12 +195,13 @@ export default function Header() {
               >
                 マイページ
               </Link>
-              <a
-                href={`tel:${SITE_CONFIG.telRaw}`}
+              <Link
+                href="/pro"
                 className="text-center py-3 bg-sumi text-white text-sm tracking-wide"
+                onClick={() => setMobileOpen(false)}
               >
-                {SITE_CONFIG.tel}
-              </a>
+                業者の方の掲載はこちら
+              </Link>
             </div>
           </nav>
         </div>

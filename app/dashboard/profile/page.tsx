@@ -15,7 +15,7 @@ export default function DashboardProfilePage() {
     introduction: MOCK_PROVIDER.introduction,
     strengths: (MOCK_PROVIDER.strengths || []).join("\n"),
     city: MOCK_PROVIDER.city,
-    phone: MOCK_PROVIDER.phone,
+    phone: MOCK_PROVIDER.phone ?? "",
     hasInsurance: MOCK_PROVIDER.hasInsurance,
     hasEstimateFree: MOCK_PROVIDER.hasEstimateFree,
     canSameDayResponse: MOCK_PROVIDER.canSameDayResponse,
