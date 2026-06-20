@@ -548,28 +548,67 @@ export function getHeroImage(index = 0): PlatformImage {
   return HERO_IMAGES[index % HERO_IMAGES.length];
 }
 
-export function getCategoryImage(category: string): PlatformImage | undefined {
-  const map: Record<string, PlatformImage | undefined> = {
-    tatami: TATAMI_IMAGES.find((i) => i.recommendedUse.includes("category-tatami")) ?? TATAMI_IMAGES[0],
-    omotegae: TATAMI_IMAGES[1],
-    uragaeshi: TATAMI_IMAGES[4],
-    shinchou: TATAMI_IMAGES[6],
-    ryukyu: TATAMI_IMAGES[0],
-    herinashi: TATAMI_IMAGES[0],
-    "kokusan-igusa": TATAMI_IMAGES[3],
-    shoji: SHOJI_IMAGES[0],
-    "shoji-harikae": SHOJI_IMAGES[0],
-    fusuma: FUSUMA_IMAGES[0],
-    "fusuma-harikae": FUSUMA_IMAGES[0],
-    washitsu: WASHITSU_IMAGES[0],
-    "washitsu-reform": WASHITSU_IMAGES[0],
-    ryokan: RYOKAN_IMAGES[0],
-    temple: TEMPLE_IMAGES[0],
-    shrine: TEMPLE_IMAGES[1],
-    rental: RENTAL_IMAGES[0],
+// カテゴリスラッグ → 画像 (data/categories.ts の全スラッグに対応)
+export function getCategoryImage(category: string): PlatformImage {
+  const map: Record<string, PlatformImage> = {
+    // ===== 畳工事 =====
+    "tatami-omotegae":      TATAMI_IMAGES[2],   // luxury-01 (表替え後の綺麗な畳)
+    "tatami-uragaeshi":     TATAMI_IMAGES[4],   // luxury-03 (裏返し)
+    "tatami-shinchou":      TATAMI_IMAGES[6],   // luxury-05 (新調後の和室)
+    "ryukyu-tatami":        TATAMI_IMAGES[0],   // ryukyu-modern-01
+    "herinashi-tatami":     TATAMI_IMAGES[0],   // ryukyu-modern-01 (縁なしも同様)
+    "washi-tatami":         TATAMI_IMAGES[3],   // luxury-02 (和紙畳)
+    "kokusandatami":        TATAMI_IMAGES[12],  // traditional-01 (国産い草)
+    "color-tatami":         TATAMI_IMAGES[10],  // luxury-09 (カラー畳)
+    "pet-tatami":           TATAMI_IMAGES[8],   // luxury-07 (ペット対応)
+    "mold-dani-tatami":     TATAMI_IMAGES[9],   // luxury-08 (カビ・ダニ対策)
+    "tatami-disposal":      TATAMI_CRAFT_IMAGES[2], // 畳処分 (floor-laying)
+    "tatami-repair":        TATAMI_CRAFT_IMAGES[0], // 畳補修 (craftsman)
+    "tatami-cleaning":      TATAMI_IMAGES[7],   // luxury-06 (クリーニング後)
+    // ===== 和室工事 =====
+    "fusuma-harikae":       FUSUMA_IMAGES[0],   // fusuma-craft-01
+    "shoji-harikae":        SHOJI_IMAGES[0],    // shoji-craft-01
+    "amido-harikae":        SHOJI_IMAGES[2],    // 網戸=障子系職人
+    "washitsu-reform":      WASHITSU_IMAGES[0], // washitsu-reform-modern
+    "sunamikabe-nurikae":   WASHITSU_IMAGES[1], // 砂壁塗り替え=リフォーム系
+    "shiraki-akuarai":      WASHITSU_IMAGES[0], // 白木=和室インテリア系
+    "tokonoma-reform":      TATAMI_IMAGES[30],  // tatami-tokonoma-01 (床の間リフォーム)
+    "chasitsu":             TATAMI_IMAGES[12],  // traditional-01 (茶室=伝統的和室)
+    "ryokan-tatami":        RYOKAN_IMAGES[0],   // ryokan-tatami-day-01
+    "temple-shrine-tatami": TEMPLE_IMAGES[0],   // temple-tatami-hall-01
+    // ===== 内装・原状回復 =====
+    "rental-tatami":        RENTAL_IMAGES[0],   // rental-apartment-tatami-01
+    "genjoukaifuku":        RENTAL_IMAGES[1],   // rental-apartment-tatami-02 (原状回復)
+    "cloth-harikae":        FUSUMA_IMAGES[3],   // ふすま布張り系
+    "cf-harikae":           WASHITSU_IMAGES[0], // CF=洋室系
+    "flooring-repair":      WASHITSU_IMAGES[1], // フローリング補修=リフォーム
+    "store-interior":       STORE_IMAGES[0],    // store-washitsu-01
+    "vacancy-reform":       RESTORATION_IMAGES[0], // 空き家リフォーム=工事前
+    "management-tatami":    BUSINESS_IMAGES[0], // 管理会社=不動産
+    // ===== 短縮エイリアス (旧マッピング互換) =====
+    tatami:             TATAMI_IMAGES[0],
+    omotegae:           TATAMI_IMAGES[2],
+    uragaeshi:          TATAMI_IMAGES[4],
+    shinchou:           TATAMI_IMAGES[6],
+    ryukyu:             TATAMI_IMAGES[0],
+    herinashi:          TATAMI_IMAGES[0],
+    "kokusan-igusa":    TATAMI_IMAGES[12],
+    shoji:              SHOJI_IMAGES[0],
+    fusuma:             FUSUMA_IMAGES[0],
+    washitsu:           WASHITSU_IMAGES[0],
+    ryokan:             RYOKAN_IMAGES[0],
+    temple:             TEMPLE_IMAGES[0],
+    shrine:             TEMPLE_IMAGES[1],
+    rental:             RENTAL_IMAGES[0],
     "rental-restoration": RENTAL_IMAGES[0],
-    "real-estate": BUSINESS_IMAGES[0],
-    store: STORE_IMAGES[0],
+    "real-estate":      BUSINESS_IMAGES[0],
+    store:              STORE_IMAGES[0],
   };
-  return map[category];
+
+  if (map[category]) return map[category];
+
+  // フォールバック: スラッグのハッシュで畳画像をローテーション
+  let h = 0;
+  for (let i = 0; i < category.length; i++) h = (h * 31 + category.charCodeAt(i)) & 0xffff;
+  return TATAMI_IMAGES[h % TATAMI_IMAGES.length];
 }
