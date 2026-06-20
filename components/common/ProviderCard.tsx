@@ -1,8 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Provider } from "@/lib/types";
 import { formatRating } from "@/lib/utils";
+import { TATAMI_CRAFT_IMAGES, SHOJI_IMAGES, FUSUMA_IMAGES, TATAMI_IMAGES } from "@/data/platformImages";
+
+const CARD_IMAGE_POOL = [...TATAMI_IMAGES.slice(0, 6), ...TATAMI_CRAFT_IMAGES, ...SHOJI_IMAGES.slice(0, 4), ...FUSUMA_IMAGES.slice(0, 4)];
+function pickCardImage(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffff;
+  return CARD_IMAGE_POOL[hash % CARD_IMAGE_POOL.length];
+}
 
 interface Props {
   provider: Provider;
@@ -21,6 +30,7 @@ export default function ProviderCard({ provider, variant = "default", rank, show
   const displayRank = rank ?? provider.rank;
   const starsFull = Math.floor(provider.averageRating);
   const starsHalf = provider.averageRating - starsFull >= 0.5;
+  const cardImg = pickCardImage(provider.id);
 
   if (variant === "list") {
     return (
@@ -99,7 +109,9 @@ export default function ProviderCard({ provider, variant = "default", rank, show
     return (
       <Link href={`/providers/${provider.id}`} className="group block bg-white border border-border hover:border-kincya/40 transition-all duration-300 hover:shadow-sm p-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-kiji shrink-0 tatami-pattern" />
+          <div className="relative w-10 h-10 bg-kiji shrink-0 overflow-hidden">
+            <Image src={cardImg.src} alt={cardImg.alt} fill className="object-cover" sizes="40px" />
+          </div>
           <div className="min-w-0">
             <p className="text-xs text-sumi/50 leading-none mb-0.5">{provider.city}</p>
             <h3 className="text-sm text-sumi group-hover:text-ai transition-colors line-clamp-1" style={{ fontFamily: "var(--font-serif)" }}>
@@ -124,7 +136,8 @@ export default function ProviderCard({ provider, variant = "default", rank, show
     <div className="bg-white border border-border hover:border-kincya/40 transition-all duration-300 hover:shadow-sm group overflow-hidden">
       {/* 写真エリア */}
       <div className="relative h-40 bg-kiji overflow-hidden">
-        <div className="absolute inset-0 tatami-pattern" />
+        <Image src={cardImg.src} alt={cardImg.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 300px" />
+        <div className="absolute inset-0 bg-sumi/10" />
         {/* ランキングバッジ */}
         {displayRank && displayRank <= 3 && (
           <div className={`absolute top-0 left-0 text-xs font-bold px-3 py-1.5 z-10 ${RANK_COLORS[displayRank]}`}>

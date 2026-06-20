@@ -1,6 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { WorkCase } from "@/lib/types";
 import SampleBadge from "@/components/common/SampleBadge";
+import { TATAMI_IMAGES, SHOJI_IMAGES, FUSUMA_IMAGES, RENTAL_IMAGES, RESTORATION_IMAGES } from "@/data/platformImages";
+
+const AFTER_POOL = [...TATAMI_IMAGES.slice(0, 10), ...SHOJI_IMAGES.slice(0, 3), ...FUSUMA_IMAGES.slice(0, 3)];
+const BEFORE_POOL = [...RENTAL_IMAGES, ...RESTORATION_IMAGES, ...TATAMI_IMAGES.slice(40)];
+function pickImg(pool: typeof AFTER_POOL, id: string) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffff;
+  return pool[h % pool.length];
+}
 
 interface Props {
   workCase: WorkCase;
@@ -8,13 +18,14 @@ interface Props {
 }
 
 export default function WorkCaseCard({ workCase, variant = "default" }: Props) {
+  const afterImg = pickImg(AFTER_POOL, workCase.id);
+  const beforeImg = pickImg(BEFORE_POOL, workCase.id + "_before");
+
   if (variant === "compact") {
     return (
       <Link href={`/works/${workCase.id}`} className="group flex gap-3 border-b border-kiji py-3 last:border-0">
-        <div className="w-16 h-16 bg-kiji shrink-0 overflow-hidden">
-          <div className="w-full h-full tatami-pattern flex items-center justify-center">
-            <span className="text-xs text-sumi/20">施工後</span>
-          </div>
+        <div className="relative w-16 h-16 bg-kiji shrink-0 overflow-hidden">
+          <Image src={afterImg.src} alt={afterImg.alt} fill className="object-cover" sizes="64px" />
         </div>
         <div>
           <p className="text-xs text-sumi/40 mb-0.5">{workCase.categoryName}・{workCase.cityName}</p>
@@ -32,8 +43,9 @@ export default function WorkCaseCard({ workCase, variant = "default" }: Props) {
       {/* 施工前後写真 */}
       <div className="grid grid-cols-2 h-40">
         <div className="relative bg-kiji overflow-hidden border-r border-border">
-          <div className="absolute inset-0 tatami-pattern" />
-          <div className="absolute bottom-1 left-2 text-xs text-sumi/30">施工前</div>
+          <Image src={beforeImg.src} alt="施工前の状態" fill className="object-cover" sizes="200px" />
+          <div className="absolute inset-0 bg-sumi/20" />
+          <div className="absolute bottom-1 left-2 text-xs text-white/70 bg-sumi/40 px-1">施工前</div>
           {workCase.isSample && (
             <div className="absolute top-2 left-2 z-10">
               <SampleBadge label={workCase.sampleLabel || "掲載イメージ"} />
@@ -41,11 +53,9 @@ export default function WorkCaseCard({ workCase, variant = "default" }: Props) {
           )}
         </div>
         <div className="relative bg-kiji/60 overflow-hidden">
-          <div className="absolute inset-0 tatami-pattern opacity-50" />
-          <div className="absolute bottom-1 right-2 text-xs text-sumi/30">施工後</div>
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent to-transparent flex items-center justify-center">
-            <span className="text-xs text-sumi/20">完成写真</span>
-          </div>
+          <Image src={afterImg.src} alt="施工後の仕上がり" fill className="object-cover" sizes="200px" />
+          <div className="absolute inset-0 bg-sumi/5" />
+          <div className="absolute bottom-1 right-2 text-xs text-white/80 bg-sumi/40 px-1">施工後</div>
         </div>
       </div>
 

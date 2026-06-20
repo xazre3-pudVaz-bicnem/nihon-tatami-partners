@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import SearchBox from "@/components/common/SearchBox";
 import ProviderCard from "@/components/common/ProviderCard";
 import ReviewCard from "@/components/common/ReviewCard";
@@ -13,6 +14,7 @@ import { getTopProviders, getHighRatedProviders, getNewProviders } from "@/data/
 import { getRecentReviews } from "@/data/reviews";
 import { getFeaturedWorkCases } from "@/data/workcases";
 import { SITE_NAME, SITE_URL } from "@/lib/metadata";
+import { HERO_IMAGES, RYOKAN_IMAGES, TEMPLE_IMAGES, BUSINESS_IMAGES, STORE_IMAGES, TATAMI_CRAFT_IMAGES, TATAMI_IMAGES, SHOJI_IMAGES, FUSUMA_IMAGES, RENTAL_IMAGES, getCategoryImage } from "@/data/platformImages";
 
 const SITE_DISPLAY_NAME = "日本畳パートナー";
 
@@ -124,13 +126,20 @@ export default function HomePage() {
 }
 
 function HeroSection() {
+  const heroImg = HERO_IMAGES[0];
   return (
     <section className="relative bg-sumi min-h-[580px] flex items-center overflow-hidden">
-      {/* 背景 */}
+      {/* 背景画像 */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-sumi via-sumi/85 to-ai/60 z-10" />
+        <Image
+          src={heroImg.src}
+          alt={heroImg.alt}
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-sumi via-sumi/90 to-sumi/50 z-10" />
         <div className="absolute inset-0 tatami-pattern opacity-5 z-10" />
-        <div className="absolute inset-0 bg-gradient-to-br from-sumi to-ai" />
       </div>
 
       {/* 縦書き装飾 */}
@@ -224,25 +233,34 @@ function PopularCategoriesSection() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {SERVICE_CATEGORIES.filter((c) => c.group === group.key).slice(0, 10).map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={`/saitama/${cat.slug}`}
-                  className="group border border-border bg-white hover:border-kincya/40 hover:shadow-sm transition-all duration-300 p-4 text-center"
-                >
-                  <div className="h-10 flex items-center justify-center mb-2">
-                    <div className="w-8 h-8 border border-kiji bg-kiji/50 tatami-pattern group-hover:border-kincya/30 transition-colors" />
-                  </div>
-                  <p className="text-xs text-sumi group-hover:text-ai transition-colors" style={{ fontFamily: "var(--font-serif)" }}>
-                    {cat.name}
-                  </p>
-                  {cat.priceFrom && (
-                    <p className="text-xs text-sumi/40 mt-1">
-                      {cat.priceFrom.toLocaleString()}円〜/{cat.unit}
-                    </p>
-                  )}
-                </Link>
-              ))}
+              {SERVICE_CATEGORIES.filter((c) => c.group === group.key).slice(0, 10).map((cat) => {
+                const catImg = getCategoryImage(cat.slug);
+                return (
+                  <Link
+                    key={cat.slug}
+                    href={`/saitama/${cat.slug}`}
+                    className="group border border-border bg-white hover:border-kincya/40 hover:shadow-sm transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="relative h-20 sm:h-24 bg-kiji overflow-hidden">
+                      {catImg ? (
+                        <Image src={catImg.src} alt={catImg.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="200px" />
+                      ) : (
+                        <div className="absolute inset-0 tatami-pattern" />
+                      )}
+                    </div>
+                    <div className="p-3 text-center">
+                      <p className="text-xs text-sumi group-hover:text-ai transition-colors" style={{ fontFamily: "var(--font-serif)" }}>
+                        {cat.name}
+                      </p>
+                      {cat.priceFrom && (
+                        <p className="text-xs text-sumi/40 mt-0.5">
+                          {cat.priceFrom.toLocaleString()}円〜/{cat.unit}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -457,24 +475,28 @@ function ForBusinessSection() {
       description: "複数物件・退去後の原状回復を迅速対応できる業者を掲載。継続取引・法人請求書払い対応業者も多数。",
       href: "/search?acceptsRealEstate=true",
       items: ["複数物件一括対応", "退去後の原状回復", "継続取引歓迎", "法人請求対応"],
+      image: BUSINESS_IMAGES[0],
     },
     {
       title: "旅館・宿泊施設向け",
       description: "客室畳の一括施工・耐久性素材の選定に対応できる業者。繁忙期前の施工計画もサポート。",
       href: "/search?acceptsRyokan=true",
       items: ["客室一括施工", "耐久性素材の提案", "スケジュール調整", "オフシーズン対応"],
+      image: RYOKAN_IMAGES[0],
     },
     {
       title: "寺院・神社向け",
       description: "格式ある空間への対応実績がある業者。法要・祭礼前の施工にも対応しています。",
       href: "/search?acceptsTempleShrine=true",
       items: ["本堂・拝殿対応", "特殊寸法対応", "法要前の施工", "格式ある仕上がり"],
+      image: TEMPLE_IMAGES[0],
     },
     {
       title: "法人・企業向け",
       description: "店舗・小上がり・和室の内装工事に対応。複数拠点の施工も一社でまとめて依頼できます。",
       href: "/search?acceptsCorporate=true",
       items: ["店舗・事務所対応", "小上がり工事", "複数拠点対応", "法人請求書払い"],
+      image: STORE_IMAGES[0],
     },
   ];
 
@@ -497,20 +519,28 @@ function ForBusinessSection() {
             <Link
               key={t.href}
               href={t.href}
-              className="group border border-white/10 bg-white/5 hover:bg-white/10 hover:border-kincya/40 transition-all duration-300 p-5"
+              className="group border border-white/10 bg-white/5 hover:bg-white/10 hover:border-kincya/40 transition-all duration-300 overflow-hidden"
             >
-              <h3 className="text-sm text-white mb-2 group-hover:text-kincya transition-colors" style={{ fontFamily: "var(--font-serif)" }}>
-                {t.title}
-              </h3>
-              <p className="text-xs text-white/50 leading-relaxed mb-3">{t.description}</p>
-              <ul className="space-y-1">
-                {t.items.map((item) => (
-                  <li key={item} className="text-xs text-white/40 flex items-center gap-1.5">
-                    <span className="w-1 h-1 bg-kincya/40 rounded-full" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              {t.image && (
+                <div className="relative h-36 overflow-hidden">
+                  <Image src={t.image.src} alt={t.image.alt} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="300px" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ai/80 via-ai/30 to-transparent" />
+                </div>
+              )}
+              <div className="p-5">
+                <h3 className="text-sm text-white mb-2 group-hover:text-kincya transition-colors" style={{ fontFamily: "var(--font-serif)" }}>
+                  {t.title}
+                </h3>
+                <p className="text-xs text-white/50 leading-relaxed mb-3">{t.description}</p>
+                <ul className="space-y-1">
+                  {t.items.map((item) => (
+                    <li key={item} className="text-xs text-white/40 flex items-center gap-1.5">
+                      <span className="w-1 h-1 bg-kincya/40 rounded-full" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </Link>
           ))}
         </div>

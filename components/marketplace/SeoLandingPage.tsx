@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import ProviderListCard from "@/components/marketplace/ProviderListCard";
 import { SITE_URL } from "@/lib/metadata";
@@ -30,6 +31,7 @@ export interface SeoLandingProps {
   h1: string;
   lead: string;
   path: string;
+  heroImage?: { src: string; alt: string };
   intro?: React.ReactNode;
   priceTitle?: string;
   priceRows?: SeoPriceRow[];
@@ -57,6 +59,7 @@ export default function SeoLandingPage({
   h1,
   lead,
   path,
+  heroImage,
   intro,
   priceTitle = "料金相場の目安",
   priceRows,
@@ -104,8 +107,14 @@ export default function SeoLandingPage({
         </div>
 
         {/* ヒーロー */}
-        <div className="bg-sumi text-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="relative bg-sumi text-white overflow-hidden">
+          {heroImage && (
+            <>
+              <Image src={heroImage.src} alt={heroImage.alt} fill className="object-cover object-center" priority sizes="100vw" />
+              <div className="absolute inset-0 bg-gradient-to-r from-sumi via-sumi/85 to-sumi/50" />
+            </>
+          )}
+          <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <h1 className="text-2xl md:text-3xl mb-3 leading-snug" style={{ fontFamily: "var(--font-serif)" }}>
               {h1}
             </h1>

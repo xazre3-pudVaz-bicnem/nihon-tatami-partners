@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SeoLandingPage from "@/components/marketplace/SeoLandingPage";
 import { MOCK_PROVIDERS } from "@/data/providers";
 import { createMetadata } from "@/lib/metadata";
+import { TEMPLE_IMAGES } from "@/data/platformImages";
 
 export const metadata: Metadata = createMetadata({
   title: "寺院向け 本堂・客殿の畳張替え業者を比較｜埼玉",
@@ -19,6 +20,7 @@ export default function Page() {
   return (
     <SeoLandingPage
       path="/saitama/temple/tatami"
+      heroImage={TEMPLE_IMAGES[0]}
       breadcrumbs={[
         { label: "トップ", href: "/" },
         { label: "埼玉県", href: "/saitama" },

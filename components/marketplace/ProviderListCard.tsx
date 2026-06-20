@@ -1,8 +1,17 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Provider } from "@/lib/types";
 import { formatRating, getResponseTimeLabel } from "@/lib/utils";
 import SampleBadge from "@/components/common/SampleBadge";
 import FavoriteButton from "@/components/common/FavoriteButton";
+import { TATAMI_CRAFT_IMAGES, SHOJI_IMAGES, FUSUMA_IMAGES } from "@/data/platformImages";
+
+const VENDOR_IMAGE_POOL = [...TATAMI_CRAFT_IMAGES, ...SHOJI_IMAGES.slice(0, 5), ...FUSUMA_IMAGES.slice(0, 5)];
+function pickVendorImage(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffff;
+  return VENDOR_IMAGE_POOL[hash % VENDOR_IMAGE_POOL.length];
+}
 
 interface Props {
   provider: Provider;
@@ -13,6 +22,7 @@ interface Props {
 // くらしのマーケット級 横長業者カード（Server Component）
 export default function ProviderListCard({ provider, rank, categorySlug }: Props) {
   const displayRank = rank ?? provider.rank;
+  const vendorImg = pickVendorImage(provider.id);
   const starsFull = Math.floor(provider.averageRating);
   const starsHalf = provider.averageRating - starsFull >= 0.5;
 
@@ -42,9 +52,14 @@ export default function ProviderListCard({ provider, rank, categorySlug }: Props
     <div className="bg-white border border-border hover:border-kincya/40 transition-all duration-300 hover:shadow-sm flex flex-col sm:flex-row gap-0 overflow-hidden">
       {/* 左：写真エリア */}
       <div className="relative w-full sm:w-48 h-44 shrink-0 bg-kiji overflow-hidden">
-        <div className="absolute inset-0 tatami-pattern flex items-center justify-center">
-          <span className="text-xs text-sumi/30">施工写真</span>
-        </div>
+        <Image
+          src={vendorImg.src}
+          alt={vendorImg.alt}
+          fill
+          className="object-cover"
+          sizes="192px"
+        />
+        <div className="absolute inset-0 bg-sumi/10" />
         {provider.isSample && (
           <div className="absolute top-2 left-2 z-20">
             <SampleBadge label={provider.isSampleLabel || "掲載イメージ"} />
