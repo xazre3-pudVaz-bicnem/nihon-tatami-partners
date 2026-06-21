@@ -99,6 +99,7 @@ export default function HomePage() {
       <PopularCategoriesSection />
       <TopProvidersSection providers={topProviders} />
       <HowItWorksSection />
+      <GuidedFlowSection />
       <TrustSection />
       <HighRatedSection providers={highRatedProviders} />
       <WorkCasesSection cases={featuredCases} />
@@ -334,6 +335,79 @@ function HowItWorksSection() {
                 <div className="text-3xl text-kincya/30 mb-3" style={{ fontFamily: "var(--font-serif)" }}>{step.num}</div>
                 <h3 className="text-sm text-white mb-2" style={{ fontFamily: "var(--font-serif)" }}>{step.title}</h3>
                 <p className="text-xs text-white/50 leading-relaxed">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GuidedFlowSection() {
+  const flows = [
+    {
+      icon: "📋",
+      title: "かんたん依頼診断",
+      description: "どんな工事が必要か分からない方へ。質問に答えるだけで必要なサービスと料金目安が分かります。",
+      cta: "診断を始める（無料）",
+      href: "/request/start",
+      accent: "bg-kincya",
+    },
+    {
+      icon: "🤝",
+      title: "おまかせマッチング",
+      description: "条件を入力するだけで、合いそうな業者を提案します。自分で探す手間を省きたい方に。",
+      cta: "マッチングを試す",
+      href: "/matching",
+      accent: "bg-ai",
+    },
+    {
+      icon: "📷",
+      title: "写真で見積もり相談",
+      description: "畳の写真を送って、業者に概算を相談できます。金額感を知りたいときに。",
+      cta: "写真を送る",
+      href: "/photo-estimate",
+      accent: "bg-sumi",
+    },
+    {
+      icon: "👥",
+      title: "相談コンシェルジュ",
+      description: "どこに頼んでいいか迷う方、法人・複数物件の相談も受け付けています。",
+      cta: "相談してみる",
+      href: "/concierge",
+      accent: "bg-igusa",
+    },
+  ];
+
+  return (
+    <section className="section-py bg-kiji/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <div className="h-px w-8 bg-kincya" />
+            <span className="text-xs tracking-widest text-kincya uppercase">Guided Services</span>
+            <div className="h-px w-8 bg-kincya" />
+          </div>
+          <h2 className="text-2xl md:text-3xl text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
+            探さずに頼める4つの方法
+          </h2>
+          <p className="text-sm text-sumi/50 mt-2">自分で業者を選ぶのが大変な方向けのサポートです</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {flows.map((f) => (
+            <div key={f.href} className="bg-white border border-border flex flex-col">
+              <div className={`${f.accent} h-1`} />
+              <div className="p-5 flex flex-col flex-1">
+                <div className="text-2xl mb-3">{f.icon}</div>
+                <h3 className="text-sm text-sumi mb-2" style={{ fontFamily: "var(--font-serif)" }}>{f.title}</h3>
+                <p className="text-xs text-sumi/60 leading-relaxed flex-1 mb-4">{f.description}</p>
+                <Link
+                  href={f.href}
+                  className={`block text-center text-xs py-2.5 px-4 text-white ${f.accent} hover:opacity-90 transition-opacity`}
+                >
+                  {f.cta}
+                </Link>
               </div>
             </div>
           ))}

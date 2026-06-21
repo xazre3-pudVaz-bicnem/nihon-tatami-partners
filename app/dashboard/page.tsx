@@ -189,6 +189,122 @@ export default function DashboardPage() {
             <p className="text-xs text-igusa">プロフィールはすべて入力済みです。</p>
           )}
         </section>
+
+        {/* ─── 未返信アラート ─── */}
+        {unreadMessages >= 3 && (
+          <section className="bg-do/5 border border-do/40 p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 bg-do text-white flex items-center justify-center text-xs shrink-0 mt-0.5">!</div>
+              <div className="flex-1">
+                <h2 className="text-base text-do mb-1" style={{ fontFamily: "var(--font-serif)" }}>
+                  未返信アラート
+                </h2>
+                <p className="text-xs text-sumi/70 mb-3">
+                  {unreadMessages}件の未読メッセージがあります。48時間以内に返信することで成約率が向上します。
+                </p>
+                <Link
+                  href="/dashboard/messages"
+                  className="text-xs bg-do text-white px-4 py-1.5 hover:opacity-80 transition-opacity inline-block"
+                >
+                  メッセージを確認する
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ─── 口コミ返信待ち ─── */}
+        {reviews.some((r) => !r.reply) && (
+          <section className="bg-white border border-border p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
+                口コミ返信待ち
+                <span className="ml-2 text-xs bg-kincya/10 text-kincya border border-kincya/30 px-1.5 py-0.5">
+                  {reviews.filter((r) => !r.reply).length}件
+                </span>
+              </h2>
+              <Link href="/dashboard/reviews" className="text-xs text-ai hover:underline">
+                すべて見る →
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {reviews
+                .filter((r) => !r.reply)
+                .slice(0, 2)
+                .map((r) => (
+                  <div key={r.id} className="border-b border-kiji pb-3 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-kincya text-sm">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</span>
+                      <span className="text-xs text-sumi/40">{formatDate(r.createdAt)}</span>
+                    </div>
+                    <p className="text-sm text-sumi line-clamp-2 mb-2">{r.body}</p>
+                    <Link
+                      href="/dashboard/reviews"
+                      className="text-xs bg-kincya text-white px-3 py-1 hover:bg-do transition-colors inline-block"
+                    >
+                      返信する
+                    </Link>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
+
+        {/* ─── 改善提案 ─── */}
+        {(() => {
+          const suggestions: { icon: string; message: string; href: string }[] = [];
+          if ((provider?.photos?.length ?? 0) < 3) {
+            suggestions.push({
+              icon: "📷",
+              message: "施工写真が少なめです。3枚以上登録すると問い合わせが増加します。",
+              href: "/dashboard/photos",
+            });
+          }
+          if ((provider?.introduction?.length ?? 0) < 100) {
+            suggestions.push({
+              icon: "📝",
+              message: "自己紹介文が短いです。100文字以上書くと信頼性が高まります。",
+              href: "/dashboard/profile",
+            });
+          }
+          if (!provider?.businessHours) {
+            suggestions.push({
+              icon: "🕐",
+              message: "営業時間が未設定です。設定するとお客様が連絡しやすくなります。",
+              href: "/dashboard/profile",
+            });
+          }
+          if ((provider?.serviceAreas?.length ?? 0) < 3) {
+            suggestions.push({
+              icon: "📍",
+              message: "対応エリアが少なめです。対応可能な市区町村を追加しましょう。",
+              href: "/dashboard/areas",
+            });
+          }
+          if (suggestions.length === 0) return null;
+          return (
+            <section className="bg-white border border-border p-5">
+              <h2 className="text-base text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+                改善提案
+              </h2>
+              <div className="space-y-2">
+                {suggestions.map((s) => (
+                  <Link
+                    key={s.href}
+                    href={s.href}
+                    className="flex items-start gap-3 border border-kiji p-3 hover:border-ai transition-colors group"
+                  >
+                    <span className="text-lg shrink-0">{s.icon}</span>
+                    <p className="text-xs text-sumi/70 flex-1 group-hover:text-sumi transition-colors">
+                      {s.message}
+                    </p>
+                    <span className="text-xs text-ai shrink-0">設定する →</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
       </div>
     </DashboardLayout>
   );

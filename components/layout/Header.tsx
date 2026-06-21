@@ -83,26 +83,18 @@ export default function Header() {
           </nav>
 
           {/* CTAボタン */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
             <Link
-              href="/quote/new"
-              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 ${
-                scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
+              href="/request/start"
+              className={`px-3 py-2 text-sm tracking-wide transition-all duration-300 border ${
+                scrolled ? "border-kincya/40 text-kincya hover:bg-kincya hover:text-white" : "border-white/40 text-white/80 hover:border-white hover:text-white"
               }`}
             >
-              一括見積もり
-            </Link>
-            <Link
-              href="/compare"
-              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 ${
-                scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
-              }`}
-            >
-              業者を比較
+              かんたん診断
             </Link>
             <Link
               href="/mypage"
-              className={`px-4 py-2 text-sm tracking-wide transition-all duration-300 flex items-center gap-1.5 ${
+              className={`px-3 py-2 text-sm tracking-wide transition-all duration-300 flex items-center gap-1.5 ${
                 scrolled ? "text-sumi/60 hover:text-ai" : "text-white/70 hover:text-white"
               }`}
             >
@@ -112,10 +104,10 @@ export default function Header() {
               マイページ
             </Link>
             <Link
-              href="/quote/new"
+              href="/bulk-quote"
               className="px-5 py-2.5 text-sm tracking-wide bg-kincya text-white hover:bg-do transition-all duration-300"
             >
-              無料で見積もり
+              一括見積もり
             </Link>
           </div>
 
@@ -175,15 +167,29 @@ export default function Header() {
             ))}
             <div className="pt-4 flex flex-col gap-3">
               <Link
-                href="/quote/new"
+                href="/request/start"
                 className="text-center py-3 bg-kincya text-white text-sm tracking-wide"
                 onClick={() => setMobileOpen(false)}
               >
-                無料で一括見積もり
+                かんたん依頼診断（無料）
+              </Link>
+              <Link
+                href="/bulk-quote"
+                className="text-center py-3 border border-kincya text-kincya text-sm tracking-wide"
+                onClick={() => setMobileOpen(false)}
+              >
+                一括見積もり
+              </Link>
+              <Link
+                href="/matching"
+                className="text-center py-3 border border-ai text-ai text-sm tracking-wide"
+                onClick={() => setMobileOpen(false)}
+              >
+                おまかせマッチング
               </Link>
               <Link
                 href="/compare"
-                className="text-center py-3 border border-ai text-ai text-sm tracking-wide"
+                className="text-center py-3 border border-sumi/20 text-sumi/60 text-sm tracking-wide"
                 onClick={() => setMobileOpen(false)}
               >
                 業者を比較する
