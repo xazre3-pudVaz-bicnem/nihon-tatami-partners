@@ -36,6 +36,19 @@ export interface ServiceCategoryDef {
   unit?: string;
   icon?: string;
   popular?: boolean;
+  // 拡張フィールド（SEO・ナビゲーション・マーケティング）
+  parentSlug?: string;
+  legacyHrefs?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  h1?: string;
+  keywords?: string[];
+  relatedCategoryIds?: string[];
+  image?: string;
+  alt?: string;
+  isPopular?: boolean;
+  targetUsers?: string[];
+  businessUseCases?: string[];
 }
 
 // ─── ユーザー ─────────────────────────────────────────────

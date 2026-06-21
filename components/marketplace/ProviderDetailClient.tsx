@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import ReviewCard from "@/components/common/ReviewCard";
@@ -12,9 +12,25 @@ import SampleBadge from "@/components/common/SampleBadge";
 import { formatRating } from "@/lib/utils";
 import type { Provider, Review, WorkCase, ProviderService } from "@/lib/types";
 
+const COMPARE_KEY = "compare_providers";
+const MAX_COMPARE = 5;
+
 function sanitizeInsurance(detail?: string): string | undefined {
   if (!detail) return detail;
   return detail.replace(/（?(上限|最大)[0-9０-９,，]+万円）?/g, "（申告情報）").trim();
+}
+
+function getCompareIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(COMPARE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function setCompareIds(ids: string[]) {
+  localStorage.setItem(COMPARE_KEY, JSON.stringify(ids));
 }
 
 const PROVIDER_FAQS = [
@@ -43,10 +59,43 @@ interface Props {
 export default function ProviderDetailClient({ provider, reviews, workCases, services, relatedProviders }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("about");
   const [favored, setFavored] = useState(false);
+  const [inCompare, setInCompare] = useState(false);
+  const [compareToast, setCompareToast] = useState<string | null>(null);
+  const [workCasesVisible, setWorkCasesVisible] = useState(4);
 
   const insuranceDisplay = sanitizeInsurance(provider.insuranceDetail);
   const name = provider.tradeName || provider.companyName;
   const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(provider.averageRating));
+
+  // 比較リストの状態を初期化
+  useEffect(() => {
+    const ids = getCompareIds();
+    setInCompare(ids.includes(provider.id));
+  }, [provider.id]);
+
+  const handleCompareToggle = () => {
+    const ids = getCompareIds();
+    if (inCompare) {
+      const next = ids.filter((id) => id !== provider.id);
+      setCompareIds(next);
+      setInCompare(false);
+      showToast("比較リストから削除しました");
+    } else {
+      if (ids.length >= MAX_COMPARE) {
+        showToast(`比較リストは最大${MAX_COMPARE}社までです`);
+        return;
+      }
+      const next = [...ids, provider.id];
+      setCompareIds(next);
+      setInCompare(true);
+      showToast("比較リストに追加しました");
+    }
+  };
+
+  const showToast = (msg: string) => {
+    setCompareToast(msg);
+    setTimeout(() => setCompareToast(null), 3000);
+  };
 
   const avgBreakdown = reviews.reduce(
     (acc, r) => {
@@ -86,6 +135,28 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
         }),
   };
 
+  // 業者固有FAQ
+  const providerSpecificFAQs = [
+    {
+      q: `${name}に依頼した場合の費用は？`,
+      a: provider.startingPrice
+        ? `${name}の表替え料金は${provider.startingPrice.toLocaleString()}円/${provider.startingPriceUnit}〜が目安です（申告情報）。素材・畳のサイズ・オプションにより変わります。無料見積もりをご利用ください。`
+        : `${name}の料金は素材・畳のサイズ・オプションにより異なります。まずは無料見積もりをご利用ください。`,
+    },
+    {
+      q: `${name}の対応エリアはどこですか？`,
+      a: `${provider.serviceAreas.join("・")}が主な対応エリアです（申告情報）。エリア外の場合はご相談ください。`,
+    },
+    {
+      q: `${name}の見積もりは無料ですか？`,
+      a: provider.hasEstimateFree
+        ? `はい、${name}は無料見積もりに対応しています（申告情報）。お問い合わせフォームよりお気軽にどうぞ。`
+        : `見積もり費用については${name}に直接ご確認ください。`,
+    },
+  ];
+
+  const allFAQs = [...providerSpecificFAQs, ...PROVIDER_FAQS];
+
   const TABS: { key: Tab; label: string; count?: number }[] = [
     { key: "about", label: "業者情報" },
     { key: "services", label: "提供サービス", count: services.length },
@@ -94,9 +165,26 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
     { key: "faq", label: "よくある質問" },
   ];
 
+  // 主要機能アイコン
+  const featureIcons = [
+    { label: "見積無料", ok: provider.hasEstimateFree, icon: "📋" },
+    { label: "写真見積", ok: provider.hasPhotoEstimate, icon: "📷" },
+    { label: "家具移動", ok: provider.hasFurnitureMove, icon: "🪑" },
+    { label: "カード払", ok: provider.acceptsCard, icon: "💳" },
+    { label: "土日対応", ok: provider.canWeekendResponse, icon: "📅" },
+    { label: "即日対応", ok: provider.canSameDayResponse, icon: "⚡" },
+  ];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(providerJsonLd) }} />
+
+      {/* トースト */}
+      {compareToast && (
+        <div className="fixed top-4 right-4 z-50 bg-sumi text-white text-sm px-4 py-3 shadow-lg transition-all duration-300">
+          {compareToast}
+        </div>
+      )}
 
       <div className="min-h-screen bg-shiro">
         {/* パンくず */}
@@ -144,6 +232,9 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                       {provider.plan === "premium" && (
                         <span className="text-xs px-2 py-0.5 bg-kincya/10 border border-kincya/30 text-kincya">おすすめ</span>
                       )}
+                      {provider.isSample && (
+                        <SampleBadge label={provider.isSampleLabel ?? "掲載イメージ"} />
+                      )}
                     </div>
                     <h1 className="text-2xl md:text-3xl text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
                       {name}
@@ -177,7 +268,24 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                     口コミ {provider.reviewCount}件
                   </button>
                   <span className="text-sumi/30">|</span>
-                  <span className="text-sm text-sumi/50">施工実績 {provider.completedCount}件</span>
+                  <span className="text-sm text-sumi/50">施工実績 {provider.completedCount.toLocaleString()}件</span>
+                </div>
+
+                {/* 主要機能アイコン */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {featureIcons.map((f) => (
+                    <div
+                      key={f.label}
+                      className={`flex items-center gap-1 text-xs px-2 py-1 border ${
+                        f.ok
+                          ? "border-igusa/30 text-igusa bg-igusa/5"
+                          : "border-border text-sumi/25 bg-transparent"
+                      }`}
+                    >
+                      <span className={f.ok ? "" : "grayscale opacity-40"}>{f.icon}</span>
+                      {f.label}
+                    </div>
+                  ))}
                 </div>
 
                 {/* バッジ */}
@@ -202,9 +310,32 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                 </div>
 
                 {/* 対応エリア */}
-                <p className="text-xs text-sumi/50">
-                  対応エリア：<span className="text-sumi/70">{provider.serviceAreas.join("・")}</span>
-                </p>
+                <div className="flex flex-wrap items-center gap-1 mb-3">
+                  <span className="text-xs text-sumi/50">対応エリア：</span>
+                  {provider.serviceAreas.map((area) => (
+                    <span key={area} className="text-xs px-2 py-0.5 bg-kiji text-sumi/70 border border-sumi/10">{area}</span>
+                  ))}
+                </div>
+
+                {/* CTAボタン（ヘッダー内） */}
+                <div className="hidden md:flex items-center gap-3 mt-4">
+                  <Link
+                    href={`/quote/new?providerId=${provider.id}`}
+                    className="bg-kincya text-white text-sm px-6 py-2.5 hover:bg-do transition-colors tracking-wide"
+                  >
+                    この業者に見積もり依頼
+                  </Link>
+                  <button
+                    onClick={handleCompareToggle}
+                    className={`text-sm px-5 py-2.5 border transition-colors tracking-wide ${
+                      inCompare
+                        ? "border-ai text-ai bg-ai/5"
+                        : "border-border text-sumi/60 hover:border-ai hover:text-ai"
+                    }`}
+                  >
+                    {inCompare ? "✓ 比較リストに追加済み" : "+ 比較リストに追加"}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -281,33 +412,38 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                     </section>
                   )}
 
+                  {/* 業者情報テーブル（F項目） */}
                   <section className="bg-white border border-border p-6">
                     <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>基本情報</h2>
                     <table className="w-full text-sm">
                       <tbody>
                         {[
                           { label: "所在地", value: `${provider.prefecture} ${provider.city}${provider.address ? " " + provider.address : ""}` },
-                          { label: "創業", value: provider.foundedYear ? `${provider.foundedYear}年（職人歴 ${provider.yearsOfExperience}年）` : "—" },
+                          { label: "創業", value: provider.foundedYear ? `${provider.foundedYear}年` : "—" },
+                          { label: "職人歴", value: provider.yearsOfExperience ? `${provider.yearsOfExperience}年` : "—" },
                           { label: "営業時間", value: provider.businessHours || "—" },
                           { label: "定休日", value: provider.closedDays || "—" },
                           { label: "連絡方法", value: "お問い合わせフォーム・見積依頼から（電話番号は掲載していません）" },
-                          { label: "平均応答時間", value: provider.responseTimeHours ? `${provider.responseTimeHours}時間以内` : "—" },
+                          { label: "平均応答時間", value: provider.responseTimeHours ? `${provider.responseTimeHours}時間以内（申告情報）` : "—" },
+                          { label: "古畳処分", value: provider.hasOldTatamiDisposal ? "対応（有料の場合あり・申告情報）" : "要確認" },
+                          { label: "インボイス", value: provider.acceptsInvoice ? "対応（申告情報）" : "要確認" },
+                          { label: "管理会社・法人", value: provider.acceptsPropertyManagement || provider.acceptsCorporate ? "対応（申告情報）" : "要確認" },
                           { label: "対応エリア", value: provider.serviceAreas.join("、") },
                         ].map((row) => (
                           <tr key={row.label} className="border-b border-kiji last:border-0">
-                            <td className="py-3 pr-4 text-xs text-sumi/50 whitespace-nowrap w-28">{row.label}</td>
+                            <td className="py-3 pr-4 text-xs text-sumi/50 whitespace-nowrap w-32">{row.label}</td>
                             <td className="py-3 text-sumi/80">{row.value}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     <p className="text-xs text-sumi/40 mt-4 leading-relaxed">
-                      掲載情報は業者の申告に基づいています。資格・保険の詳細は各業者にご確認ください。
+                      掲載情報は業者の申告情報に基づいています。資格・保険・対応内容の詳細は各業者にご確認ください。
                     </p>
                   </section>
 
                   <section className="bg-white border border-border p-6">
-                    <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>資格・保険・組合加盟</h2>
+                    <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>資格・保険・組合加盟（申告情報）</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <h3 className="text-xs text-sumi/50 mb-2">保有資格（申告情報）</h3>
@@ -340,6 +476,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                         ) : <p className="text-xs text-sumi/40">情報なし</p>}
                       </div>
                     </div>
+                    <p className="text-xs text-sumi/40 mt-4">掲載申請時に基本情報の確認を行いますが、内容は申告情報に基づき掲載しています。</p>
                   </section>
 
                   <section className="bg-white border border-border p-6">
@@ -369,6 +506,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                         </div>
                       ))}
                     </div>
+                    <p className="text-xs text-sumi/40 mt-3">※ 申告情報に基づき掲載。詳細は業者にご確認ください。</p>
                   </section>
                 </div>
               )}
@@ -383,7 +521,78 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                     </div>
                   ) : (
                     services.map((svc) => (
-                      <ServiceListingCard key={svc.id} service={svc} providerName={name} providerId={provider.id} />
+                      <div key={svc.id} className="space-y-4">
+                        <ServiceListingCard service={svc} providerName={name} providerId={provider.id} />
+
+                        {/* 料金表 */}
+                        {svc.priceTable && svc.priceTable.length > 0 && (
+                          <section className="bg-white border border-border p-5">
+                            <h3 className="text-sm font-medium text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+                              {svc.title} — 素材別料金表（申告情報）
+                            </h3>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm border-collapse">
+                                <thead>
+                                  <tr className="bg-kiji">
+                                    <th className="text-left text-xs text-sumi/60 font-medium py-2 px-3 border border-border/40">素材・グレード</th>
+                                    <th className="text-right text-xs text-sumi/60 font-medium py-2 px-3 border border-border/40">料金目安</th>
+                                    <th className="text-left text-xs text-sumi/60 font-medium py-2 px-3 border border-border/40">備考</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {svc.priceTable.map((row, i) => (
+                                    <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-kiji/30"}>
+                                      <td className="py-2.5 px-3 text-sumi/80 text-xs border border-border/30">{row.label}</td>
+                                      <td className="py-2.5 px-3 text-sumi font-medium text-xs text-right border border-border/30">{row.price}</td>
+                                      <td className="py-2.5 px-3 text-sumi/50 text-xs border border-border/30">{row.note || "—"}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            {svc.optionPrices && svc.optionPrices.length > 0 && (
+                              <div className="mt-4">
+                                <h4 className="text-xs text-sumi/60 mb-2 font-medium">追加オプション料金</h4>
+                                <ul className="space-y-1">
+                                  {svc.optionPrices.map((op, i) => (
+                                    <li key={i} className="flex items-center justify-between text-xs text-sumi/70 py-1 border-b border-kiji last:border-0">
+                                      <span>{op.label}</span>
+                                      <span className="font-medium text-sumi">{op.price}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            <p className="text-xs text-sumi/40 mt-3">※ 申告情報に基づく料金目安です。最終金額は現地確認後に確定します。</p>
+                          </section>
+                        )}
+
+                        {/* 施工の流れ */}
+                        {svc.workFlow && svc.workFlow.length > 0 && (
+                          <section className="bg-white border border-border p-5">
+                            <h3 className="text-sm font-medium text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                              {svc.title} — 施工の流れ
+                            </h3>
+                            <ol className="relative space-y-0">
+                              {svc.workFlow.map((step, i) => (
+                                <li key={i} className="flex gap-4 pb-4 last:pb-0">
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-7 h-7 rounded-full bg-kincya/10 border border-kincya/30 flex items-center justify-center shrink-0">
+                                      <span className="text-xs font-medium text-kincya">{i + 1}</span>
+                                    </div>
+                                    {i < svc.workFlow!.length - 1 && (
+                                      <div className="w-px flex-1 bg-kincya/20 mt-1" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1 pt-1 pb-2">
+                                    <p className="text-sm text-sumi/80">{step}</p>
+                                  </div>
+                                </li>
+                              ))}
+                            </ol>
+                          </section>
+                        )}
+                      </div>
                     ))
                   )}
                 </div>
@@ -394,7 +603,12 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                 <div className="space-y-4">
                   {reviews.length > 0 && (
                     <div className="bg-white border border-border p-5">
-                      <p className="text-xs text-sumi/40 mb-3">※ 以下の口コミはサンプル表示です。実際の口コミは業者登録後に順次掲載されます。</p>
+                      {provider.isSample && (
+                        <p className="text-xs text-sumi/40 mb-3 flex items-center gap-2">
+                          <SampleBadge label={provider.isSampleLabel || "掲載イメージ"} />
+                          以下の口コミはサンプル表示です。実際の口コミは業者登録後に順次掲載されます。
+                        </p>
+                      )}
                       <div className="flex items-center gap-6">
                         <div className="text-center">
                           <p className="text-5xl font-medium text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
@@ -405,7 +619,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                               <span key={i} className={`text-xl ${f ? "text-kincya" : "text-border"}`}>★</span>
                             ))}
                           </div>
-                          <p className="text-xs text-sumi/50">{reviews.length}件の口コミ（サンプル）</p>
+                          <p className="text-xs text-sumi/50">{reviews.length}件の口コミ{provider.isSample ? "（サンプル）" : ""}</p>
                         </div>
                         <div className="flex-1">
                           {[5, 4, 3, 2, 1].map((star) => {
@@ -424,6 +638,26 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                           })}
                         </div>
                       </div>
+
+                      {/* 評価内訳バー */}
+                      {hasBreakdown && (
+                        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-kiji">
+                          {[
+                            { label: "仕上がり品質", value: avgBreakdown.quality / avgBreakdown.count },
+                            { label: "料金の妥当性", value: avgBreakdown.price / avgBreakdown.count },
+                            { label: "対応の速さ", value: avgBreakdown.speed / avgBreakdown.count },
+                            { label: "コミュニケーション", value: avgBreakdown.communication / avgBreakdown.count },
+                          ].map((item) => (
+                            <div key={item.label} className="flex items-center gap-2">
+                              <span className="text-xs text-sumi/50 w-20 shrink-0">{item.label}</span>
+                              <div className="flex-1 bg-kiji h-1.5">
+                                <div className="bg-kincya h-1.5" style={{ width: `${(item.value / 5) * 100}%` }} />
+                              </div>
+                              <span className="text-xs font-medium text-sumi w-6 text-right">{item.value.toFixed(1)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                   {reviews.length === 0 ? (
@@ -444,9 +678,29 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                       <p className="text-sm text-sumi/50">施工事例は準備中です</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                      {workCases.map((wc) => <WorkCaseCard key={wc.id} workCase={wc} />)}
-                    </div>
+                    <>
+                      {provider.isSample && (
+                        <div className="mb-4 flex items-center gap-2 text-xs text-sumi/50">
+                          <SampleBadge label={provider.isSampleLabel || "掲載イメージ"} />
+                          以下の施工事例はサンプルです。
+                        </div>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        {workCases.slice(0, workCasesVisible).map((wc) => (
+                          <WorkCaseCard key={wc.id} workCase={wc} />
+                        ))}
+                      </div>
+                      {workCasesVisible < workCases.length && (
+                        <div className="mt-6 text-center">
+                          <button
+                            onClick={() => setWorkCasesVisible((v) => v + 4)}
+                            className="border border-sumi/30 text-sumi/60 text-sm px-8 py-3 hover:border-ai hover:text-ai transition-all duration-300"
+                          >
+                            もっと見る（あと{workCases.length - workCasesVisible}件）
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               )}
@@ -455,17 +709,38 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
               {activeTab === "faq" && (
                 <section className="bg-white border border-border p-6">
                   <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>よくある質問</h2>
-                  <div className="divide-y divide-kiji">
-                    {PROVIDER_FAQS.map((faq) => (
-                      <details key={faq.q} className="group py-3">
-                        <summary className="cursor-pointer text-sm text-sumi font-medium flex items-start gap-2 list-none">
-                          <span className="text-kincya shrink-0">Q.</span>
-                          <span className="flex-1">{faq.q}</span>
-                          <span className="text-sumi/30 group-open:rotate-180 transition-transform shrink-0">▾</span>
-                        </summary>
-                        <p className="text-sm text-sumi/70 leading-relaxed mt-2 pl-6">{faq.a}</p>
-                      </details>
-                    ))}
+
+                  {/* 業者固有FAQ */}
+                  <div className="mb-2">
+                    <p className="text-xs text-sumi/50 mb-3">{name}についてよく聞かれる質問</p>
+                    <div className="divide-y divide-kiji">
+                      {providerSpecificFAQs.map((faq) => (
+                        <details key={faq.q} className="group py-3">
+                          <summary className="cursor-pointer text-sm text-sumi font-medium flex items-start gap-2 list-none">
+                            <span className="text-kincya shrink-0">Q.</span>
+                            <span className="flex-1">{faq.q}</span>
+                            <span className="text-sumi/30 group-open:rotate-180 transition-transform shrink-0">▾</span>
+                          </summary>
+                          <p className="text-sm text-sumi/70 leading-relaxed mt-2 pl-6">{faq.a}</p>
+                        </details>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-kiji">
+                    <p className="text-xs text-sumi/50 mb-3">一般的なご質問</p>
+                    <div className="divide-y divide-kiji">
+                      {PROVIDER_FAQS.map((faq) => (
+                        <details key={faq.q} className="group py-3">
+                          <summary className="cursor-pointer text-sm text-sumi font-medium flex items-start gap-2 list-none">
+                            <span className="text-kincya shrink-0">Q.</span>
+                            <span className="flex-1">{faq.q}</span>
+                            <span className="text-sumi/30 group-open:rotate-180 transition-transform shrink-0">▾</span>
+                          </summary>
+                          <p className="text-sm text-sumi/70 leading-relaxed mt-2 pl-6">{faq.a}</p>
+                        </details>
+                      ))}
+                    </div>
                   </div>
                   <p className="text-xs text-sumi/40 mt-4">
                     ※ 回答は一般的な目安です。実際の対応・費用は業者により異なります。見積もり時にご確認ください。
@@ -476,7 +751,10 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
               {/* 関連業者 */}
               {relatedProviders.length > 0 && (
                 <section className="mt-8">
-                  <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>同じエリアの業者</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg text-sumi" style={{ fontFamily: "var(--font-serif)" }}>同じエリアの業者</h2>
+                    <Link href="/search" className="text-xs text-ai hover:underline">他の業者も見る →</Link>
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {relatedProviders.map((rp) => {
                       const rpName = rp.tradeName || rp.companyName;
@@ -492,6 +770,9 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                             <span className="text-kincya">★ {formatRating(rp.averageRating)}</span>
                             <span className="text-sumi/40">（{rp.reviewCount}件）</span>
                           </div>
+                          {rp.startingPrice && (
+                            <p className="text-xs text-sumi/50 mt-1">{rp.startingPrice.toLocaleString()}円〜/{rp.startingPriceUnit}</p>
+                          )}
                         </Link>
                       );
                     })}
@@ -514,6 +795,26 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                     予約リクエスト
                   </Link>
                 </div>
+
+                {/* 比較リストに追加 */}
+                <button
+                  onClick={handleCompareToggle}
+                  className={`w-full text-center text-sm py-3 border transition-all duration-300 tracking-wide ${
+                    inCompare
+                      ? "border-ai text-ai bg-ai/5"
+                      : "border-border text-sumi/60 hover:border-ai hover:text-ai"
+                  }`}
+                >
+                  {inCompare ? "✓ 比較リストに追加済み" : "+ 比較リストに追加"}
+                </button>
+                {inCompare && (
+                  <Link
+                    href={`/compare?ids=${provider.id}`}
+                    className="block w-full text-center text-xs text-ai hover:underline py-1"
+                  >
+                    比較ページへ →
+                  </Link>
+                )}
 
                 <div className="bg-cloud border border-border p-4 text-center">
                   <p className="text-xs text-sumi/60 mb-2">複数業者から見積もりを取りたい方</p>
@@ -545,24 +846,27 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                     </div>
                   </div>
                 </Link>
-
-                <Link href={`/compare?ids=${provider.id}`}
-                  className="block w-full text-center border border-border text-sumi/60 text-xs py-2.5 hover:border-ai hover:text-ai transition-all duration-300">
-                  ＋ この業者を比較リストに追加
-                </Link>
               </div>
             </div>
           </div>
         </div>
 
         {/* スマホ下部固定CTA */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border px-4 py-3 grid grid-cols-2 gap-2">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border px-3 py-2 grid grid-cols-3 gap-2">
           <Link href={`/quote/new?providerId=${provider.id}`}
-            className="text-center py-3 bg-kincya text-white text-sm tracking-wide">
+            className="text-center py-3 bg-kincya text-white text-xs tracking-wide">
             見積依頼
           </Link>
+          <button
+            onClick={handleCompareToggle}
+            className={`text-center py-3 text-xs tracking-wide border transition-colors ${
+              inCompare ? "border-ai text-ai bg-ai/5" : "border-border text-sumi/60"
+            }`}
+          >
+            {inCompare ? "✓ 比較済み" : "+ 比較追加"}
+          </button>
           <Link href={`/booking/new?providerId=${provider.id}`}
-            className="text-center py-3 border border-ai text-ai text-sm tracking-wide">
+            className="text-center py-3 border border-ai text-ai text-xs tracking-wide">
             予約リクエスト
           </Link>
         </div>

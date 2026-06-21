@@ -6,7 +6,8 @@ import SearchBox from "@/components/common/SearchBox";
 import CityLinkGrid from "@/components/common/CityLinkGrid";
 import FAQSection from "@/components/common/FAQSection";
 import FilterSidebar from "@/components/marketplace/FilterSidebar";
-import SortSelector from "@/components/marketplace/SortSelector";
+import SearchSortBar from "@/components/marketplace/SearchSortBar";
+import FilterDrawer from "@/components/marketplace/FilterDrawer";
 import ProviderListCard from "@/components/marketplace/ProviderListCard";
 import PaginationLinks from "@/components/marketplace/PaginationLinks";
 import StickyBottomCTA from "@/components/common/StickyBottomCTA";
@@ -47,8 +48,20 @@ export default async function SearchPage({ searchParams }: Props) {
   if (get(sp, "hasLicense") === "true") conditionTags.push("一級技能士");
   if (get(sp, "hasInsurance") === "true") conditionTags.push("保険加入");
   if (get(sp, "acceptsCorporate") === "true") conditionTags.push("法人対応");
+  if (get(sp, "sameDayResponse") === "true") conditionTags.push("即日対応");
+  if (get(sp, "weekendResponse") === "true") conditionTags.push("土日対応");
+  if (get(sp, "hasEstimateFree") === "true") conditionTags.push("見積無料");
+  if (get(sp, "hasPhotoEstimate") === "true") conditionTags.push("写真見積対応");
+  if (get(sp, "hasFurnitureMove") === "true") conditionTags.push("家具移動対応");
 
-  const h1 = `${cityLabel ? cityLabel + "の" : "埼玉県の"}${cat ? cat.name : "畳・和室"}業者を比較`;
+  const h1 =
+    cat && cityLabel
+      ? `${cityLabel}の${cat.name}業者を比較`
+      : cat
+      ? `埼玉県の${cat.name}業者を比較`
+      : cityLabel
+      ? `${cityLabel}の畳・和室業者を比較`
+      : "埼玉県の畳・和室業者を比較";
 
   // pagination用にstringのみのsearchParamsを抽出
   const plainSp: Record<string, string> = {};
@@ -73,13 +86,25 @@ export default async function SearchPage({ searchParams }: Props) {
             { label: "トップ", href: "/" },
             { label: "業者を探す", href: "/search" },
             ...(cityLabel ? [{ label: cityLabel }] : []),
+            ...(cat ? [{ label: cat.name }] : []),
           ]}
         />
 
-        <div className="mt-4 mb-4">
+        {/* 検索ヘッダー */}
+        <div className="mt-4 mb-5">
           <h1 className="text-xl md:text-2xl text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
             {h1}
           </h1>
+          <p className="text-sm text-sumi/50 mt-1">
+            {total > 0 ? (
+              <>
+                <span className="font-bold text-sumi">{total}</span>件の業者が見つかりました
+              </>
+            ) : (
+              "条件に合う業者が見つかりませんでした"
+            )}
+          </p>
+
           {conditionTags.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <span className="text-xs text-sumi/40">条件:</span>
@@ -88,6 +113,9 @@ export default async function SearchPage({ searchParams }: Props) {
                   {t}
                 </span>
               ))}
+              <Link href="/search" className="text-xs text-ai hover:underline ml-1">
+                すべてリセット
+              </Link>
             </div>
           )}
         </div>
@@ -101,42 +129,58 @@ export default async function SearchPage({ searchParams }: Props) {
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* スマホ用フィルター */}
-            <div className="lg:hidden">
-              <Suspense fallback={null}>
-                <FilterSidebar />
-              </Suspense>
-            </div>
-
-            <div className="mb-5">
-              <Suspense fallback={<div className="h-8" />}>
-                <SortSelector total={total} />
+            {/* ソートバー（件数・ソート・スマホフィルター） */}
+            <div className="mb-4">
+              <Suspense fallback={<div className="h-10" />}>
+                <SearchSortBar total={total} />
               </Suspense>
             </div>
 
             {providers.length === 0 ? (
-              <div className="text-center py-16 bg-white border border-border px-4">
-                <p className="text-sumi/60 mb-1">条件に合う業者が見つかりませんでした</p>
-                <p className="text-xs text-sumi/40 mb-6">条件を広げるか、一括見積もりで複数業者に相談できます</p>
-                <div className="flex flex-wrap justify-center gap-3">
+              /* ゼロ件UI */
+              <div className="bg-white border border-border px-6 py-14 text-center">
+                <div className="text-4xl mb-4">🔍</div>
+                <p className="text-base text-sumi mb-1.5" style={{ fontFamily: "var(--font-serif)" }}>
+                  条件に合う業者が見つかりませんでした
+                </p>
+                <p className="text-xs text-sumi/50 mb-8">
+                  絞り込み条件を変えるか、一括見積もりで複数業者にまとめてご相談ください
+                </p>
+                <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3">
                   <Link
                     href="/search"
-                    className="inline-block text-sm text-ai border border-ai px-4 py-2.5 hover:bg-ai hover:text-white transition-all"
+                    className="inline-flex items-center justify-center text-sm text-ai border border-ai px-5 py-2.5 hover:bg-ai hover:text-white transition-all"
                   >
-                    条件をリセット
+                    条件をリセットして再検索
                   </Link>
                   <Link
                     href={`/search${categorySlug ? `?category=${categorySlug}` : ""}`}
-                    className="inline-block text-sm text-sumi border border-border px-4 py-2.5 hover:border-sumi transition-all"
+                    className="inline-flex items-center justify-center text-sm text-sumi border border-border px-5 py-2.5 hover:border-sumi transition-all"
                   >
-                    条件を広げる（近隣エリアも表示）
+                    エリアを広げて検索
                   </Link>
                   <Link
                     href="/bulk-quote"
-                    className="inline-block text-sm bg-kincya text-white px-4 py-2.5 hover:bg-do transition-all font-medium"
+                    className="inline-flex items-center justify-center text-sm bg-kincya text-white px-5 py-2.5 hover:bg-do transition-all font-medium"
                   >
-                    一括見積もりを依頼
+                    一括見積もりで複数社に相談する
                   </Link>
+                </div>
+
+                {/* 関連カテゴリ */}
+                <div className="mt-10">
+                  <p className="text-xs text-sumi/50 mb-3">サービスから探す</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {POPULAR_CATEGORY_CONFIGS.slice(0, 6).map((c) => (
+                      <Link
+                        key={c.slug}
+                        href={`/search?category=${c.slug}`}
+                        className="text-xs border border-border text-sumi/60 hover:border-ai hover:text-ai transition-colors px-3 py-1.5"
+                      >
+                        {c.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -150,8 +194,40 @@ export default async function SearchPage({ searchParams }: Props) {
               </>
             )}
 
+            {/* ページ下部CTA */}
+            {providers.length > 0 && (
+              <section className="mt-10 bg-ai/5 border border-ai/20 p-6">
+                <h2 className="text-base text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
+                  複数社に一括で相談しませんか？
+                </h2>
+                <p className="text-xs text-sumi/60 mb-4">
+                  希望条件を一度入力するだけで、複数の業者から見積もりが届きます。
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/bulk-quote"
+                    className="inline-flex items-center justify-center text-sm bg-kincya text-white px-5 py-2.5 hover:bg-do transition-colors font-medium"
+                  >
+                    一括見積もりを依頼
+                  </Link>
+                  <Link
+                    href="/diagnose"
+                    className="inline-flex items-center justify-center text-sm border border-sumi text-sumi px-5 py-2.5 hover:bg-kiji transition-colors"
+                  >
+                    かんたん診断で探す
+                  </Link>
+                  <Link
+                    href="/photo-estimate"
+                    className="inline-flex items-center justify-center text-sm border border-sumi text-sumi px-5 py-2.5 hover:bg-kiji transition-colors"
+                  >
+                    写真で見積もりを依頼
+                  </Link>
+                </div>
+              </section>
+            )}
+
             {/* SEO本文 */}
-            <section className="mt-12 bg-white border border-border p-6">
+            <section className="mt-8 bg-white border border-border p-6">
               <h2 className="text-lg text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
                 {cityLabel ? `${cityLabel}で` : "埼玉県で"}畳・和室の業者を選ぶには
               </h2>
@@ -162,7 +238,7 @@ export default async function SearchPage({ searchParams }: Props) {
               </p>
               <p className="text-sm text-sumi/70 leading-relaxed mb-6">
                 業者を選ぶ際は、料金だけでなく口コミ評価・施工実績・保有資格・保険加入の有無を確認しましょう。
-                一級畳製作技能士の在籍や損害賠償保険への加入は、安心して依頼できる目安のひとつです。
+                一級畳製作技能士の在籍や損害賠償保険への加入は、安心して依頼できる目安のひとつです。（申告情報のため詳細は各業者へご確認ください）
               </p>
 
               {/* 表替え・裏返し・新調の違い */}
@@ -195,9 +271,9 @@ export default async function SearchPage({ searchParams }: Props) {
                     </tr>
                   </thead>
                   <tbody className="text-sumi/70">
-                    <tr className="border-b border-kiji"><td className="px-3 py-2">表替え</td><td className="px-3 py-2 text-do">3,200円〜</td><td className="px-3 py-2 text-xs">素材（い草・和紙・琉球）で変動</td></tr>
+                    <tr className="border-b border-kiji"><td className="px-3 py-2">表替え</td><td className="px-3 py-2 text-do">3,200円〜</td><td className="px-3 py-2 text-xs">素材（い草・和紙・琉球）で変動。見積もりで確認</td></tr>
                     <tr className="border-b border-kiji"><td className="px-3 py-2">裏返し</td><td className="px-3 py-2 text-do">2,500円〜</td><td className="px-3 py-2 text-xs">1枚につき1回まで</td></tr>
-                    <tr><td className="px-3 py-2">新調</td><td className="px-3 py-2 text-do">8,000円〜</td><td className="px-3 py-2 text-xs">畳床・い草のグレードで変動</td></tr>
+                    <tr><td className="px-3 py-2">新調</td><td className="px-3 py-2 text-do">8,000円〜</td><td className="px-3 py-2 text-xs">畳床・い草のグレードで変動。見積もりで確認</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -228,6 +304,13 @@ export default async function SearchPage({ searchParams }: Props) {
             </section>
           </div>
         </div>
+      </div>
+
+      {/* スマホ下部固定フィルタードロワーボタン */}
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 lg:hidden">
+        <Suspense fallback={null}>
+          <FilterDrawer />
+        </Suspense>
       </div>
 
       <FAQSection
