@@ -27,6 +27,7 @@ export interface City {
 export interface ServiceCategoryDef {
   id: string;
   slug: string;
+  href: string;
   name: string;
   shortName: string;
   group: "tatami" | "washitsu" | "restoration";

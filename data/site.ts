@@ -93,7 +93,7 @@ export const FOOTER_LINKS = {
     { label: "和室リフォーム", href: "/saitama/washitsu/reform" },
   ],
   areas: [
-    { label: "さいたま市", href: "/saitama/saitama" },
+    { label: "さいたま市", href: "/saitama/saitama-city" },
     { label: "川口市", href: "/saitama/kawaguchi" },
     { label: "川越市", href: "/saitama/kawagoe" },
     { label: "越谷市", href: "/saitama/koshigaya" },

@@ -42,7 +42,7 @@ export default function CategoriesPage() {
                 {cats.map((cat) => (
                   <Link
                     key={cat.slug}
-                    href={`/saitama/${cat.slug}`}
+                    href={cat.href}
                     className="group border border-border bg-white hover:border-kincya/40 hover:shadow-sm transition-all duration-300 p-5"
                   >
                     <h3 className="text-base text-sumi group-hover:text-ai transition-colors mb-2" style={{ fontFamily: "var(--font-serif)" }}>

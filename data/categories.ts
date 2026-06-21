@@ -1,10 +1,11 @@
 import type { ServiceCategoryDef } from "@/lib/types";
 
 export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
-  // 畳カテゴリ
+  // ─── 畳カテゴリ ────────────────────────────────────────────────────────
   {
     id: "tatami-omotegae",
     slug: "tatami-omotegae",
+    href: "/saitama/tatami/omotegae",
     name: "畳表替え",
     shortName: "表替え",
     group: "tatami",
@@ -16,6 +17,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tatami-uragaeshi",
     slug: "tatami-uragaeshi",
+    href: "/saitama/tatami/uragaeshi",
     name: "畳裏返し",
     shortName: "裏返し",
     group: "tatami",
@@ -27,6 +29,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tatami-shinchou",
     slug: "tatami-shinchou",
+    href: "/saitama/tatami/shinchou",
     name: "畳新調",
     shortName: "新調",
     group: "tatami",
@@ -38,6 +41,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "ryukyu-tatami",
     slug: "ryukyu-tatami",
+    href: "/saitama/tatami/ryukyu",
     name: "琉球畳",
     shortName: "琉球畳",
     group: "tatami",
@@ -49,6 +53,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "herinashi-tatami",
     slug: "herinashi-tatami",
+    href: "/saitama/tatami/herinashi",
     name: "縁なし畳",
     shortName: "縁なし",
     group: "tatami",
@@ -60,6 +65,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "washi-tatami",
     slug: "washi-tatami",
+    href: "/saitama/tatami/washi",
     name: "和紙畳",
     shortName: "和紙畳",
     group: "tatami",
@@ -71,6 +77,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "kokusandatami",
     slug: "kokusandatami",
+    href: "/saitama/tatami/kokusan-igusa",
     name: "国産畳",
     shortName: "国産畳",
     group: "tatami",
@@ -82,6 +89,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "color-tatami",
     slug: "color-tatami",
+    href: "/saitama/tatami/color",
     name: "カラー畳",
     shortName: "カラー畳",
     group: "tatami",
@@ -93,6 +101,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "pet-tatami",
     slug: "pet-tatami",
+    href: "/saitama/tatami/pet",
     name: "ペット対応畳",
     shortName: "ペット対応",
     group: "tatami",
@@ -104,6 +113,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "mold-dani-tatami",
     slug: "mold-dani-tatami",
+    href: "/saitama/tatami/anti-mite-mold",
     name: "ダニ・カビ対策畳",
     shortName: "ダニ・カビ対策",
     group: "tatami",
@@ -115,6 +125,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tatami-disposal",
     slug: "tatami-disposal",
+    href: "/saitama/tatami/disposal",
     name: "畳処分",
     shortName: "畳処分",
     group: "tatami",
@@ -126,6 +137,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tatami-repair",
     slug: "tatami-repair",
+    href: "/saitama/tatami/repair",
     name: "畳補修",
     shortName: "畳補修",
     group: "tatami",
@@ -137,6 +149,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tatami-cleaning",
     slug: "tatami-cleaning",
+    href: "/saitama/tatami/cleaning",
     name: "畳クリーニング",
     shortName: "クリーニング",
     group: "tatami",
@@ -146,10 +159,11 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
     popular: false,
   },
 
-  // 和室カテゴリ
+  // ─── 和室カテゴリ ──────────────────────────────────────────────────────
   {
     id: "fusuma-harikae",
     slug: "fusuma-harikae",
+    href: "/saitama/fusuma/harikae",
     name: "ふすま張替え",
     shortName: "ふすま",
     group: "washitsu",
@@ -161,6 +175,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "shoji-harikae",
     slug: "shoji-harikae",
+    href: "/saitama/shoji/harikae",
     name: "障子張替え",
     shortName: "障子",
     group: "washitsu",
@@ -172,6 +187,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "amido-harikae",
     slug: "amido-harikae",
+    href: "/saitama/amido/harikae",
     name: "網戸張替え",
     shortName: "網戸",
     group: "washitsu",
@@ -183,6 +199,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "washitsu-reform",
     slug: "washitsu-reform",
+    href: "/saitama/washitsu/reform",
     name: "和室リフォーム",
     shortName: "和室リフォーム",
     group: "washitsu",
@@ -194,6 +211,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "sunamikabe-nurikae",
     slug: "sunamikabe-nurikae",
+    href: "/saitama/washitsu/sunakabe",
     name: "砂壁・聚楽壁の塗り替え",
     shortName: "砂壁塗り替え",
     group: "washitsu",
@@ -205,6 +223,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "shiraki-akuarai",
     slug: "shiraki-akuarai",
+    href: "/saitama/washitsu/akunuki",
     name: "白木あく洗い",
     shortName: "あく洗い",
     group: "washitsu",
@@ -216,6 +235,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "tokonoma-reform",
     slug: "tokonoma-reform",
+    href: "/saitama/washitsu/tokonoma",
     name: "床の間リフォーム",
     shortName: "床の間",
     group: "washitsu",
@@ -227,6 +247,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "chasitsu",
     slug: "chasitsu",
+    href: "/saitama/washitsu/chashitsu",
     name: "茶室の畳・和室工事",
     shortName: "茶室",
     group: "washitsu",
@@ -238,6 +259,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "ryokan-tatami",
     slug: "ryokan-tatami",
+    href: "/saitama/ryokan/tatami",
     name: "旅館の畳工事",
     shortName: "旅館向け",
     group: "washitsu",
@@ -249,6 +271,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "temple-shrine-tatami",
     slug: "temple-shrine-tatami",
+    href: "/saitama/temple/tatami",
     name: "寺・神社の畳工事",
     shortName: "寺社向け",
     group: "washitsu",
@@ -258,10 +281,11 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
     popular: false,
   },
 
-  // 原状回復カテゴリ
+  // ─── 原状回復・内装カテゴリ ───────────────────────────────────────────
   {
     id: "rental-tatami",
     slug: "rental-tatami",
+    href: "/saitama/rental-restoration/tatami",
     name: "賃貸退去時の畳張替え",
     shortName: "賃貸退去",
     group: "restoration",
@@ -273,6 +297,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "genjoukaifuku",
     slug: "genjoukaifuku",
+    href: "/saitama/rental-restoration/tatami",
     name: "賃貸物件の原状回復",
     shortName: "原状回復",
     group: "restoration",
@@ -284,6 +309,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "cloth-harikae",
     slug: "cloth-harikae",
+    href: "/saitama/cross/harikae",
     name: "クロス張替え",
     shortName: "クロス",
     group: "restoration",
@@ -295,6 +321,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "cf-harikae",
     slug: "cf-harikae",
+    href: "/saitama/floor/cushion-floor",
     name: "クッションフロア張替え",
     shortName: "CF張替え",
     group: "restoration",
@@ -306,6 +333,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "flooring-repair",
     slug: "flooring-repair",
+    href: "/saitama/floor/repair",
     name: "フローリング補修",
     shortName: "フローリング",
     group: "restoration",
@@ -317,6 +345,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "store-interior",
     slug: "store-interior",
+    href: "/saitama/store/interior",
     name: "店舗内装",
     shortName: "店舗内装",
     group: "restoration",
@@ -328,6 +357,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "vacancy-reform",
     slug: "vacancy-reform",
+    href: "/saitama/vacancy-reform",
     name: "空室対策リフォーム",
     shortName: "空室対策",
     group: "restoration",
@@ -339,6 +369,7 @@ export const SERVICE_CATEGORIES: ServiceCategoryDef[] = [
   {
     id: "management-tatami",
     slug: "management-tatami",
+    href: "/saitama/property-management/tatami",
     name: "管理会社向け畳交換",
     shortName: "管理会社向け",
     group: "restoration",
@@ -357,6 +388,10 @@ export const CATEGORY_GROUP_LABELS: Record<string, string> = {
 
 export function getCategoryBySlug(slug: string): ServiceCategoryDef | undefined {
   return SERVICE_CATEGORIES.find((c) => c.slug === slug);
+}
+
+export function getCategoryByHref(href: string): ServiceCategoryDef | undefined {
+  return SERVICE_CATEGORIES.find((c) => c.href === href);
 }
 
 export function getCategoriesByGroup(group: "tatami" | "washitsu" | "restoration"): ServiceCategoryDef[] {

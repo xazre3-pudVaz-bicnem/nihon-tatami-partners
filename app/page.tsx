@@ -173,12 +173,12 @@ function HeroSection() {
           {/* クイックリンク */}
           <div className="mt-5 flex flex-wrap gap-2">
             {[
-              { label: "畳表替え", href: "/saitama/tatami-omotegae" },
-              { label: "畳新調", href: "/saitama/tatami-shinchou" },
-              { label: "琉球畳", href: "/saitama/ryukyu-tatami" },
-              { label: "ふすま張替え", href: "/saitama/fusuma-harikae" },
-              { label: "和室リフォーム", href: "/saitama/washitsu-reform" },
-              { label: "原状回復", href: "/saitama/genjoukaifuku" },
+              { label: "畳表替え", href: "/saitama/tatami/omotegae" },
+              { label: "畳新調", href: "/saitama/tatami/shinchou" },
+              { label: "琉球畳", href: "/saitama/tatami/ryukyu" },
+              { label: "ふすま張替え", href: "/saitama/fusuma/harikae" },
+              { label: "和室リフォーム", href: "/saitama/washitsu/reform" },
+              { label: "原状回復", href: "/saitama/rental-restoration/tatami" },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -239,7 +239,7 @@ function PopularCategoriesSection() {
                 return (
                   <Link
                     key={cat.slug}
-                    href={`/saitama/${cat.slug}`}
+                    href={cat.href}
                     className="group border border-border bg-white hover:border-kincya/40 hover:shadow-sm transition-all duration-300 overflow-hidden"
                   >
                     <div className="relative h-20 sm:h-24 bg-kiji overflow-hidden">
