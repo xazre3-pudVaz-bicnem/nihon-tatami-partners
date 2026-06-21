@@ -166,7 +166,7 @@ export default async function CityCategoryPage({ params }: Props) {
                 {cat.priceFrom && `${cityData.name}での${cat.name}の料金目安は${cat.priceFrom.toLocaleString()}円/${cat.unit}〜です。`}
               </p>
               <p>
-                掲載業者はすべて当サービスの審査を通過した業者のみです。一級畳製作技能士・損害賠償保険加入などの条件を満たした業者を掲載しています。口コミと評価で安心して選んでください。
+                掲載申請時に基本情報の確認を行っています。資格・保険加入は業者の申告情報として掲載しています。料金・口コミ・施工実績・対応エリアを比較してから依頼を決められます。
               </p>
               {cat.group === "tatami" && (
                 <p>

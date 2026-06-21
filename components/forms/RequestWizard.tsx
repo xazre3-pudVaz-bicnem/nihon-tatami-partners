@@ -26,7 +26,7 @@ const STEP_LABELS = [
   "畳の状態",          // 3
   "枚数・広さ",         // 4
   "希望時期",          // 5
-  "連絡先入力",         // 6
+  "写真の準備",         // 6
 ];
 
 const STEP1_OPTIONS = [
@@ -51,7 +51,9 @@ const STEP2_OPTIONS = [
   "寺",
   "神社",
   "茶室",
-  "その他",
+  "民泊",
+  "介護施設",
+  "管理物件",
 ];
 
 const STEP3_OPTIONS = [
@@ -64,6 +66,7 @@ const STEP3_OPTIONS = [
   "焦げ跡",
   "ペット汚れ",
   "水濡れ",
+  "畳下の劣化が心配",
   "よく分からない",
 ];
 
@@ -80,7 +83,17 @@ const STEP5_OPTIONS = [
   "できるだけ早く（1週間以内）",
   "1ヶ月以内",
   "3ヶ月以内",
-  "時期は未定",
+  "退去日まで",
+  "法要・繁忙期・入居日まで",
+  "未定",
+];
+
+const STEP6_OPTIONS = [
+  "畳全体の写真",
+  "傷んでいる箇所のアップ",
+  "部屋全体（広さが分かる写真）",
+  "ふすま・障子の写真",
+  "写真なしでも進める",
 ];
 
 const TOTAL_STEPS = 6; // タイトル画面を除くステップ数
@@ -193,14 +206,7 @@ export default function RequestWizard({ onComplete }: Props) {
   const [step3, setStep3] = useState<string[]>([]);
   const [step4, setStep4] = useState("");
   const [step5, setStep5] = useState("");
-  const [contact, setContact] = useState<ContactInfo>({
-    name: "",
-    email: "",
-    phone: "",
-    city: "",
-    isCorporate: false,
-    companyName: "",
-  });
+  const [step6, setStep6] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 「次へ」が有効かチェック
@@ -210,7 +216,7 @@ export default function RequestWizard({ onComplete }: Props) {
     if (step === 3) return step3.length > 0;
     if (step === 4) return step4 !== "";
     if (step === 5) return step5 !== "";
-    if (step === 6) return true; // 連絡先はすべて任意
+    if (step === 6) return step6.length > 0;
     return true;
   };
 
@@ -231,14 +237,17 @@ export default function RequestWizard({ onComplete }: Props) {
       { stepKey: "tatami_condition", stepLabel: "畳の状態", values: step3 },
       { stepKey: "tatami_size", stepLabel: "枚数・広さ", values: [step4] },
       { stepKey: "schedule", stepLabel: "希望時期", values: [step5] },
+      { stepKey: "photos", stepLabel: "写真の準備", values: step6 },
     ];
 
+    const hasPhotos = step6.some((v) => v !== "写真なしでも進める");
+
     if (onComplete) {
-      onComplete(answers, contact);
+      onComplete(answers, { name: "", email: "", phone: "", city: "", isCorporate: false, companyName: "" });
     } else {
       // デフォルト: URLパラメータで結果ページへ遷移
       const result = encodeURIComponent(
-        JSON.stringify({ service: "tatami-omotegae", size: step4, schedule: step5, type: step1[0] ?? "" })
+        JSON.stringify({ service: "tatami-omotegae", size: step4, schedule: step5, type: step1[0] ?? "", hasPhotos })
       );
       router.push(`/request/complete?result=${result}`);
     }
@@ -323,74 +332,15 @@ export default function RequestWizard({ onComplete }: Props) {
 
       {step === 6 && (
         <div>
-          <h2 className="text-base font-bold text-sumi mb-1">お名前・ご連絡先（任意）</h2>
-          <div className="flex items-start gap-2 bg-igusa/10 border border-igusa/30 rounded-lg px-3 py-2.5 mb-4">
-            <span className="text-igusa text-sm mt-0.5 flex-shrink-0">✓</span>
+          <h2 className="text-base font-bold text-sumi mb-1">写真の準備について教えてください</h2>
+          <p className="text-xs text-sumi/55 mb-2">用意できる写真を選んでください（複数選択可）</p>
+          <div className="flex items-start gap-2 bg-ai/10 border border-ai/20 rounded-lg px-3 py-2.5 mb-4">
+            <span className="text-ai text-sm mt-0.5 flex-shrink-0">📷</span>
             <p className="text-xs text-sumi/70 leading-relaxed">
-              登録不要で見積もりを依頼できます。以下の項目はすべて任意です。入力しなくても診断結果を確認できます。
+              写真があると業者が現状を把握しやすく、より正確な見積もりにつながります。写真がなくても診断を進められます。
             </p>
           </div>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">
-                お名前<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
-              </label>
-              <input
-                type="text"
-                value={contact.name}
-                onChange={(e) => setContact({ ...contact, name: e.target.value })}
-                placeholder="例：山田 太郎"
-                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-sumi focus:outline-none focus:border-kincya"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">
-                メールアドレス<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
-              </label>
-              <input
-                type="email"
-                value={contact.email}
-                onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                placeholder="例：example@email.com"
-                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-sumi focus:outline-none focus:border-kincya"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">
-                電話番号<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
-              </label>
-              <input
-                type="tel"
-                value={contact.phone}
-                onChange={(e) => setContact({ ...contact, phone: e.target.value })}
-                placeholder="例：090-0000-0000"
-                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-sumi focus:outline-none focus:border-kincya"
-              />
-            </div>
-            <div>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={contact.isCorporate}
-                  onChange={(e) => setContact({ ...contact, isCorporate: e.target.checked })}
-                  className="w-4 h-4 accent-kincya"
-                />
-                <span className="text-sm text-sumi/80">法人・管理会社として依頼する</span>
-              </label>
-            </div>
-            {contact.isCorporate && (
-              <div>
-                <label className="block text-xs font-medium text-sumi/70 mb-1">会社名</label>
-                <input
-                  type="text"
-                  value={contact.companyName}
-                  onChange={(e) => setContact({ ...contact, companyName: e.target.value })}
-                  placeholder="例：株式会社○○管理"
-                  className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-sumi focus:outline-none focus:border-kincya"
-                />
-              </div>
-            )}
-          </div>
+          <MultiSelect options={STEP6_OPTIONS} selected={step6} onChange={setStep6} />
         </div>
       )}
 

@@ -11,9 +11,12 @@ import FilterDrawer from "@/components/marketplace/FilterDrawer";
 import ProviderListCard from "@/components/marketplace/ProviderListCard";
 import PaginationLinks from "@/components/marketplace/PaginationLinks";
 import StickyBottomCTA from "@/components/common/StickyBottomCTA";
+import SampleBadge from "@/components/common/SampleBadge";
 import { filterAndSortProviders, type RawSearchParams } from "@/lib/search";
 import { getCategoryConfigBySlug, POPULAR_CATEGORY_CONFIGS } from "@/config/categories";
 import { createMetadata } from "@/lib/metadata";
+import { MOCK_WORK_CASES } from "@/data/workcases";
+import { SAITAMA_CITIES } from "@/data/cities";
 
 interface Props {
   searchParams: Promise<RawSearchParams>;
@@ -226,6 +229,74 @@ export default async function SearchPage({ searchParams }: Props) {
               </section>
             )}
 
+            {/* 見積前チェックリスト */}
+            <section className="mt-10 bg-white border border-border p-6">
+              <h2 className="text-lg text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
+                見積前にチェックしておきたいこと
+              </h2>
+              <p className="text-xs text-sumi/50 mb-5">スムーズな見積もり・施工のために、事前にご確認いただくと便利です。</p>
+              <ul className="space-y-3">
+                {[
+                  "畳の枚数・部屋数を数えておく（縁あり・縁なしの確認）",
+                  "現在の畳材（い草・和紙・樹脂など）を確認しておく",
+                  "家具移動の必要性を確認する",
+                  "古畳の処分方法（引き取り依頼か自己処分か）を決めておく",
+                  "希望時期（退去日・引越し日・法要日など）を決めておく",
+                  "写真を撮っておくと見積もりが正確になります",
+                  "賃貸の場合は管理会社・オーナーの確認が必要な場合あり",
+                  "複数業者から見積もりを取り、内訳を比較する",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-0.5 shrink-0 w-5 h-5 border-2 border-igusa/60 bg-igusa/5 flex items-center justify-center">
+                      <span className="sr-only">チェック項目</span>
+                    </span>
+                    <span className="text-sm text-sumi/70 leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* 施工事例 */}
+            <section className="mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
+                  施工事例
+                </h2>
+                <Link href="/cases" className="text-sm text-ai hover:underline">
+                  すべて見る →
+                </Link>
+              </div>
+              <div className="grid sm:grid-cols-3 gap-4">
+                {MOCK_WORK_CASES.slice(0, 3).map((wc) => (
+                  <Link
+                    key={wc.id}
+                    href={`/cases/${wc.id}`}
+                    className="bg-white border border-border hover:border-ai transition-colors group"
+                  >
+                    {/* before/after 写真エリア */}
+                    <div className="grid grid-cols-2 h-28 bg-kiji/30 overflow-hidden">
+                      <div className="flex items-center justify-center border-r border-border bg-kiji/40">
+                        <span className="text-xs text-sumi/40">Before</span>
+                      </div>
+                      <div className="flex items-center justify-center bg-kiji/20">
+                        <span className="text-xs text-sumi/40">After</span>
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <SampleBadge label={wc.sampleLabel} />
+                        <span className="text-xs text-sumi/40">{wc.cityName}</span>
+                      </div>
+                      <p className="text-xs font-medium text-sumi leading-snug group-hover:text-ai transition-colors line-clamp-2">
+                        {wc.title}
+                      </p>
+                      <p className="text-xs text-ai mt-1">{wc.categoryName}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
             {/* 料金相場セクション */}
             <section className="mt-10 bg-white border border-border p-6">
               <h2 className="text-lg text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
@@ -377,6 +448,24 @@ export default async function SearchPage({ searchParams }: Props) {
                     {c.priceFrom && (
                       <span className="ml-1.5 text-xs opacity-60">{c.priceFrom.toLocaleString()}円〜</span>
                     )}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* 近隣エリアから探す */}
+            <section className="mt-6 bg-kiji/20 border border-border p-6">
+              <h2 className="text-base text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                近隣エリアから探す
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {SAITAMA_CITIES.map((city) => (
+                  <Link
+                    key={city.id}
+                    href={`/saitama/${city.slug}`}
+                    className="text-sm border border-border bg-shiro text-sumi/70 px-3 py-1.5 hover:border-ai hover:text-ai transition-colors"
+                  >
+                    {city.name}
                   </Link>
                 ))}
               </div>

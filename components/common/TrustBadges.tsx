@@ -5,8 +5,8 @@ export default function TrustBadges() {
       description: "掲載申請時に会社情報・連絡先・対応サービスの確認を行います",
     },
     {
-      title: "口コミで比較",
-      description: "実際の利用者による口コミ評価で業者を比較できます",
+      title: "口コミ・実績で比較",
+      description: "口コミ件数・施工実績・保有資格・料金を一覧で比較できます",
     },
     {
       title: "無料で見積相談",

@@ -50,6 +50,7 @@ const ALL_GROUPS: GroupKey[] = ["tatami", "washitsu", "restoration"];
 const GROUP_ALIAS: Record<string, GroupKey> = {
   interior: "restoration",
   naisou: "restoration",
+  business: "restoration",
   reform: "washitsu",
   tatami: "tatami",
   washitsu: "washitsu",
