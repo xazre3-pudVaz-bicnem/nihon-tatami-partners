@@ -51,8 +51,27 @@ const nextConfig: NextConfig = {
       { source: "/saitama/management-tatami", destination: "/saitama/property-management/tatami",permanent: true },
       // ─── さいたま市スラッグ互換 ──────────────────────────────────────
       { source: "/saitama/saitama",           destination: "/saitama/saitama-city",              permanent: true },
+      // ─── 畳新調: /saitama/tatami/shincho → 正規URL ─────────────────
+      { source: "/saitama/tatami/shincho",    destination: "/saitama/tatami/shinchou",           permanent: true },
+      // ─── 国産畳: kokusan → kokusan-igusa ───────────────────────────
+      { source: "/saitama/tatami/kokusan",    destination: "/saitama/tatami/kokusan-igusa",      permanent: true },
+      // ─── 賃貸原状回復: /full → /tatami ─────────────────────────────
+      { source: "/saitama/rental-restoration/full", destination: "/saitama/rental-restoration/tatami", permanent: true },
+      // ─── 診断ページ旧URL ─────────────────────────────────────────────
+      { source: "/request/diagnose",          destination: "/request/start",                     permanent: true },
       // ─── quote → bulk-quote ──────────────────────────────────────────
       { source: "/quote/new",                 destination: "/bulk-quote/new",                    permanent: true },
+      // ─── 記事スラッグ互換（旧テストURL） ───────────────────────────────
+      { source: "/articles/tatami-omotegae-shincho-difference", destination: "/articles/tatami-omotegae-uragaeshi-shinchou", permanent: true },
+      { source: "/articles/tatami-omotegae-shincho", destination: "/articles/tatami-omotegae-uragaeshi-shinchou", permanent: true },
+      // ─── 施工事例ID互換 ──────────────────────────────────────────────
+      { source: "/cases/case-001",            destination: "/cases/wc-001",                      permanent: true },
+      { source: "/cases/case-002",            destination: "/cases/wc-002",                      permanent: true },
+      { source: "/works/case-001",            destination: "/works/wc-001",                      permanent: true },
+      // ─── Q&A ID互換 ─────────────────────────────────────────────────
+      { source: "/questions/question-001",    destination: "/questions/q-001",                   permanent: true },
+      // ─── サービス詳細 (IDなし場合は業者詳細へ) ──────────────────────
+      { source: "/providers/:id/services/service-:num", destination: "/providers/:id", permanent: false },
     ];
   },
 };

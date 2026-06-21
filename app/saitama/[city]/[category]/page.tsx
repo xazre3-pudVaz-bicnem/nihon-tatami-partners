@@ -12,26 +12,89 @@ import { getCityConfigBySlug, getNearbyCities } from "@/config/cities";
 import { getCategoryConfigBySlug } from "@/config/categories";
 import { SITE_URL } from "@/lib/metadata";
 
+// ─── サービスグループスラッグ定義 ─────────────────────────────────────────
+const SERVICE_GROUP_SLUGS = ["tatami", "fusuma", "shoji", "washitsu", "restoration", "ryokan", "temple", "shrine", "rental"] as const;
+type ServiceGroupSlug = (typeof SERVICE_GROUP_SLUGS)[number];
+
+function isGroupSlug(slug: string): slug is ServiceGroupSlug {
+  return SERVICE_GROUP_SLUGS.includes(slug as ServiceGroupSlug);
+}
+
+const GROUP_NAMES: Record<string, string> = {
+  tatami: "畳工事",
+  fusuma: "ふすま工事",
+  shoji: "障子工事",
+  washitsu: "和室リフォーム",
+  restoration: "内装・原状回復",
+  ryokan: "旅館・宿泊施設向け",
+  temple: "寺院向け",
+  shrine: "神社向け",
+  rental: "賃貸原状回復",
+};
+
+// グループスラッグ → data/categories.ts の group フィールドへのマッピング
+const GROUP_SLUG_TO_DATA_GROUP: Record<string, string> = {
+  tatami: "tatami",
+  fusuma: "washitsu",
+  shoji: "washitsu",
+  washitsu: "washitsu",
+  restoration: "restoration",
+  ryokan: "washitsu",
+  temple: "washitsu",
+  shrine: "washitsu",
+  rental: "restoration",
+};
+
+// generateStaticParams でグループスラッグを追加する市区町村（上位5市）
+const GROUP_CITIES_FOR_STATIC = ["saitama-city", "kawaguchi", "kawagoe", "koshigaya", "tokorozawa"];
+const GROUP_SLUGS_FOR_CITIES = ["tatami", "fusuma", "shoji", "washitsu"] as const;
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface Props {
   params: Promise<{ city: string; category: string }>;
 }
 
 export async function generateStaticParams() {
   const pairs: { city: string; category: string }[] = [];
+
+  // 既存: 具体的なサービスカテゴリスラッグ × 全市区町村
   for (const city of SAITAMA_CITIES) {
     for (const cat of SERVICE_CATEGORIES.filter((c) => c.popular)) {
       pairs.push({ city: city.slug, category: cat.slug });
     }
   }
+
+  // 追加: グループスラッグ × 主要5市
+  for (const citySlug of GROUP_CITIES_FOR_STATIC) {
+    for (const groupSlug of GROUP_SLUGS_FOR_CITIES) {
+      pairs.push({ city: citySlug, category: groupSlug });
+    }
+  }
+
   return pairs;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city, category } = await params;
   const cityData = getCityBySlug(city);
+  if (!cityData) return {};
+
+  // グループスラッグの場合
+  if (isGroupSlug(category)) {
+    const groupName = GROUP_NAMES[category] ?? category;
+    return {
+      title: `${cityData.name}の${groupName}業者を比較 | 料金・口コミで選べる | 日本畳パートナーズ`,
+      description: `${cityData.name}（埼玉県）の${groupName}業者を料金・口コミ・対応エリアで比較。無料で見積もり相談ができます。`,
+      alternates: { canonical: `${SITE_URL}/saitama/${city}/${category}` },
+      robots: "index,follow",
+    };
+  }
+
+  // 既存: 具体的なサービスカテゴリスラッグの場合
   const cat = getCategoryConfigBySlug(category) ?? undefined;
   const catName = cat?.name ?? SERVICE_CATEGORIES.find((c) => c.slug === category)?.name;
-  if (!cityData || !catName) return {};
+  if (!catName) return {};
   return {
     title: `${cityData.name}の${catName}業者を比較 | 料金・口コミで選べる | 日本畳パートナーズ`,
     description: `${cityData.name}（埼玉県）の${catName}業者を料金・口コミ・対応エリアで比較。${cat?.seoDescription ?? ""}無料で見積もり相談ができます。`,
@@ -44,9 +107,194 @@ export default async function CityCategoryPage({ params }: Props) {
   const { city, category } = await params;
   const cityData = getCityBySlug(city);
   const cityCfg = getCityConfigBySlug(city);
+  if (!cityData) notFound();
+
+  // ─── グループスラッグ対応 ─────────────────────────────────────────────
+  if (isGroupSlug(category)) {
+    const groupName = GROUP_NAMES[category] ?? category;
+    const dataGroup = GROUP_SLUG_TO_DATA_GROUP[category];
+    const relatedCategories = dataGroup
+      ? SERVICE_CATEGORIES.filter((c) => c.group === dataGroup && c.popular).slice(0, 8)
+      : [];
+
+    const providers = getProvidersByCity(cityData.name);
+    const nearby = getNearbyCities(city);
+    const fallbackNear = SAITAMA_CITIES.filter((c) => c.slug !== city).slice(0, 6);
+    const nearCities = nearby.length ? nearby : fallbackNear.map((c) => ({ slug: c.slug, name: c.name }));
+
+    const faqs = [
+      {
+        question: `${cityData.name}の${groupName}の料金相場は？`,
+        answer: `${cityData.name}での${groupName}は工事の種類・素材によって異なります。複数業者に無料見積もりを依頼して比較することをおすすめします。`,
+      },
+      {
+        question: `${cityData.name}で${groupName}に対応している業者はいますか？`,
+        answer: `日本畳パートナーズには${cityData.name}エリアに対応する業者が掲載されています。一覧から料金・口コミで比較して選べます。`,
+      },
+      {
+        question: `${groupName}の工事はどれくらいの期間かかりますか？`,
+        answer: "工事の種類・規模・業者によって異なります。まずは無料見積もりで確認してください。",
+      },
+      {
+        question: "見積もりは無料ですか？",
+        answer: "多くの掲載業者が無料見積もりに対応しています。気になる業者に複数依頼して比較するのがおすすめです。",
+      },
+    ];
+
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "トップ", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "埼玉県", item: `${SITE_URL}/saitama` },
+        { "@type": "ListItem", position: 3, name: cityData.name, item: `${SITE_URL}/saitama/${city}` },
+        { "@type": "ListItem", position: 4, name: groupName, item: `${SITE_URL}/saitama/${city}/${category}` },
+      ],
+    };
+
+    const faqJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
+    };
+
+    return (
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
+        <div className="min-h-screen bg-shiro">
+          {/* ヘッダー */}
+          <div className="bg-sumi">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <Breadcrumbs
+                variant="dark"
+                items={[
+                  { label: "トップ", href: "/" },
+                  { label: "埼玉県", href: "/saitama" },
+                  { label: cityData.name, href: `/saitama/${city}` },
+                  { label: groupName },
+                ]}
+              />
+            </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4">
+              <h1 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+                {cityData.name}の{groupName}業者を比較｜料金・口コミで選べる
+              </h1>
+              <p className="text-sm text-white/60 max-w-2xl">
+                {cityCfg?.seoNote ?? cityData.description}
+              </p>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* リード文 */}
+            <section className="mb-8 bg-white border border-border p-6">
+              <h2 className="text-lg text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
+                {cityData.name}で{groupName}を依頼するなら
+              </h2>
+              <p className="text-sm text-sumi/70 leading-relaxed">
+                {cityData.name}エリアで{groupName}を探しているなら、日本畳パートナーズで料金・口コミ・対応エリア・資格をまとめて比較できます。
+                無料で複数業者に見積もりを依頼でき、納得のいく1社を選べます。
+              </p>
+            </section>
+
+            {/* 関連サービスカテゴリ一覧 */}
+            {relatedCategories.length > 0 && (
+              <section className="mb-10">
+                <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                  {cityData.name}の{groupName}｜サービス一覧
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {relatedCategories.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/saitama/${city}/${c.slug}`}
+                      className="bg-white border border-border p-5 hover:border-ai transition-colors group"
+                    >
+                      <h3 className="text-sm text-sumi group-hover:text-ai transition-colors mb-1">
+                        {cityData.name}の{c.name}
+                      </h3>
+                      {c.priceFrom !== undefined && c.priceFrom > 0 && (
+                        <p className="text-xs text-kincya">{c.priceFrom.toLocaleString()}円/{c.unit ?? "枚"}〜</p>
+                      )}
+                      {c.description && (
+                        <p className="text-xs text-sumi/60 mt-2 leading-relaxed line-clamp-2">{c.description}</p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* 業者一覧 */}
+            <section className="mb-10">
+              <h2 className="text-xl text-sumi mb-5" style={{ fontFamily: "var(--font-serif)" }}>
+                {cityData.name}対応の{groupName}業者
+              </h2>
+              {providers.length === 0 ? (
+                <div className="bg-white border border-border p-8 text-center">
+                  <p className="text-sm text-sumi/50 mb-4">{cityData.name}エリアに登録された業者はまだ少ないです</p>
+                  <Link href="/search" className="text-sm text-ai border border-ai px-4 py-2 hover:bg-ai hover:text-white transition-all">
+                    埼玉県全体で探す
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {providers.map((p) => (
+                    <ProviderCard key={p.id} provider={p} showFavorite />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* 近隣エリア */}
+            <section className="mb-8">
+              <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                近隣エリアの{groupName}
+              </h2>
+              <div className="flex flex-wrap gap-3">
+                {nearCities.slice(0, 8).map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/saitama/${c.slug}/${category}`}
+                    className="text-sm border border-border text-sumi/70 hover:border-ai hover:text-ai transition-colors px-4 py-2"
+                  >
+                    {c.name}の{groupName}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            {/* 一括見積もりCTA */}
+            <section className="mb-10 bg-sumi p-8 text-center">
+              <h2 className="text-lg text-white mb-2" style={{ fontFamily: "var(--font-serif)" }}>
+                {cityData.name}の{groupName}を一括見積もり
+              </h2>
+              <p className="text-sm text-white/60 mb-6">
+                複数の業者にまとめて見積もり依頼。料金・口コミで比較して最適な1社を選べます。
+              </p>
+              <Link
+                href="/bulk-quote/new"
+                className="inline-block bg-kincya text-sumi text-sm font-bold px-8 py-3 hover:opacity-90 transition-opacity"
+              >
+                無料で一括見積もりを依頼する
+              </Link>
+            </section>
+
+            <FAQSection items={faqs} title={`${cityData.name}の${groupName}に関するQ&A`} />
+          </div>
+
+          <CityLinkGrid categorySlug={category} currentCitySlug={city} title="他の市区町村でも探す" />
+        </div>
+      </>
+    );
+  }
+
+  // ─── 既存: 具体的なサービスカテゴリスラッグの処理 ────────────────────
   const cat = getCategoryConfigBySlug(category);
   const legacyCat = SERVICE_CATEGORIES.find((c) => c.slug === category);
-  if (!cityData || (!cat && !legacyCat)) notFound();
+  if (!cat && !legacyCat) notFound();
 
   const catName = cat?.name ?? legacyCat!.name;
   const catShort = cat?.shortName ?? legacyCat!.shortName;

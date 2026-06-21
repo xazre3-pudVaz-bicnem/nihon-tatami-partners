@@ -137,6 +137,10 @@ const NAV_HREFS = [
   "/terms",
   "/privacy",
   "/safety",
+  "/request/diagnosis",
+  "/request/result",
+  "/dashboard/questions",
+  "/dashboard/prices",
 ];
 
 // ─── チェック対象: 都市URL ────────────────────────────────────────────────
@@ -152,6 +156,13 @@ const CITY_HREFS = [
   "/saitama/kumagaya",
 ];
 
+// ─── チェック対象: 市区町村×サービスグループURL ──────────────────────────
+const CITY_GROUP_HREFS = [
+  "/saitama/saitama-city/tatami",
+  "/saitama/kawaguchi/tatami",
+  "/saitama/kawagoe/tatami",
+];
+
 // ─── 旧URL → リダイレクト確認 ────────────────────────────────────────────
 // next.config.ts の redirects に含まれているかを確認する旧URL
 const LEGACY_HREFS = [
@@ -162,6 +173,10 @@ const LEGACY_HREFS = [
   "/saitama/shoji-harikae",
   "/saitama/washitsu-reform",
   "/saitama/genjoukaifuku",
+  "/saitama/tatami/shincho",              // → shinchou へリダイレクト確認
+  "/saitama/tatami/kokusan",              // → kokusan-igusa へリダイレクト確認
+  "/saitama/rental-restoration/full",     // → rental-restoration/tatami へリダイレクト確認
+  "/request/diagnose",                    // → request/start へリダイレクト確認
 ];
 
 // next.config.ts の redirects に定義されているソースURLを読む
@@ -202,6 +217,17 @@ for (const href of NAV_HREFS) {
 
 console.log("\n=== 市区町村URL ===");
 for (const href of CITY_HREFS) {
+  const ok = routeExists(href);
+  if (!ok) {
+    errors.push(`[BROKEN] ${href} — 対応するpage.tsxが見つかりません`);
+    console.log(`  ✗ ${href}`);
+  } else {
+    console.log(`  ✓ ${href}`);
+  }
+}
+
+console.log("\n=== 市区町村×サービスグループURL ===");
+for (const href of CITY_GROUP_HREFS) {
   const ok = routeExists(href);
   if (!ok) {
     errors.push(`[BROKEN] ${href} — 対応するpage.tsxが見つかりません`);

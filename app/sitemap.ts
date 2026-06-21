@@ -15,9 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority,
   });
 
-  const tatamiCategorySlugs = [
-    "omotegae", "uragaeshi", "shinchou", "ryukyu", "herinashi", "washi", "kokusan-igusa", "pet",
-  ];
+  // 畳カテゴリは categoryPages で網羅するためここでは不要
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
@@ -58,13 +56,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     path("/safety", 0.4, "monthly"),
     path("/guidelines/review", 0.4, "monthly"),
     path("/guidelines/provider", 0.4, "monthly"),
-    // 畳カテゴリSEO（/saitama/tatami/[category]）
-    ...tatamiCategorySlugs.map((slug) => path(`/saitama/tatami/${slug}`, 0.8)),
+    // ※畳カテゴリは categoryPages で網羅するため削除
   ];
 
-  // カテゴリ別 SEO ページ（/saitama/[category]）
-  const categoryPages: MetadataRoute.Sitemap = SERVICE_CATEGORIES.map((cat) => ({
-    url: `${SITE_URL}/saitama/${cat.slug}`,
+  // カテゴリ別 SEO ページ（正規URL /saitama/tatami/omotegae 等）
+  const categoryPages: MetadataRoute.Sitemap = SERVICE_CATEGORIES.filter((c) => c.href).map((cat) => ({
+    url: `${SITE_URL}${cat.href}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: cat.popular ? 0.85 : 0.75,
@@ -78,7 +75,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
-  // 市区町村 × 人気カテゴリ（/saitama/[city]/[category]）
+  // 市区町村 × 人気カテゴリ（/saitama/[city]/[category]）スラッグ使用
   const cityCategoryPages: MetadataRoute.Sitemap = [];
   for (const city of SAITAMA_CITIES) {
     for (const cat of POPULAR_CATEGORIES) {
@@ -86,7 +83,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${SITE_URL}/saitama/${city.slug}/${cat.slug}`,
         lastModified: now,
         changeFrequency: "weekly" as const,
-        priority: 0.70,
+        priority: 0.65,
       });
     }
   }
