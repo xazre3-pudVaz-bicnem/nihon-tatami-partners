@@ -9,6 +9,7 @@ import FilterSidebar from "@/components/marketplace/FilterSidebar";
 import SortSelector from "@/components/marketplace/SortSelector";
 import ProviderListCard from "@/components/marketplace/ProviderListCard";
 import PaginationLinks from "@/components/marketplace/PaginationLinks";
+import StickyBottomCTA from "@/components/common/StickyBottomCTA";
 import { filterAndSortProviders, type RawSearchParams } from "@/lib/search";
 import { getCategoryConfigBySlug, POPULAR_CATEGORY_CONFIGS } from "@/config/categories";
 import { createMetadata } from "@/lib/metadata";
@@ -266,6 +267,7 @@ export default async function SearchPage({ searchParams }: Props) {
       />
 
       <CityLinkGrid title="市区町村から探す" />
+      <StickyBottomCTA primaryLabel="一括見積もりを依頼" primaryHref="/bulk-quote" secondaryLabel="絞り込む" secondaryHref="/search" />
     </div>
   );
 }

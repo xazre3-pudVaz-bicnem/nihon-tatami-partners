@@ -41,10 +41,10 @@ export default function MypagePage() {
             { label: "予約履歴", href: "/mypage/bookings", badge: 0 },
             { label: "見積履歴", href: "/mypage/quotes", badge: 0 },
             { label: "お気に入り", href: "/mypage/favorites", badge: 0 },
-            { label: "口コミ投稿", href: "/mypage/reviews", badge: 0 },
+            { label: "口コミ投稿", href: "/mypage/reviews/new", badge: 0 },
             { label: "通知", href: "/mypage/notifications", badge: 0 },
             { label: "プロフィール", href: "/mypage/profile", badge: 0 },
-            { label: "退会", href: "/mypage/withdraw", badge: 0 },
+            { label: "設定", href: "/mypage/settings", badge: 0 },
           ].map((item) => (
             <Link
               key={item.href}

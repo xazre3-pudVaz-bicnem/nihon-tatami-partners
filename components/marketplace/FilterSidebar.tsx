@@ -147,8 +147,12 @@ export default function FilterSidebar() {
           <Check name="hasFurnitureMove" label="家具移動対応" />
           <Check name="parkingFree" label="駐車場代込み" />
           <Check name="hasEstimateFree" label="無料見積もり" />
+          <Check name="hasPhotoEstimate" label="写真見積もり可" />
+          <Check name="hasOldTatamiDisposal" label="古畳処分対応" />
           <Check name="acceptsCard" label="カード払い対応" />
+          <Check name="acceptsInvoice" label="インボイス対応" />
           <Check name="canOnlineConsult" label="オンライン相談可" />
+          <Check name="nightConsultation" label="夜間相談可" />
         </div>
       </Section>
 

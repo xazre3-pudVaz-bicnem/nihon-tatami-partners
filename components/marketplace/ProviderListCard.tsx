@@ -4,6 +4,7 @@ import type { Provider } from "@/lib/types";
 import { formatRating, getResponseTimeLabel } from "@/lib/utils";
 import SampleBadge from "@/components/common/SampleBadge";
 import FavoriteButton from "@/components/common/FavoriteButton";
+import CompareButton from "@/components/common/CompareButton";
 import { TATAMI_CRAFT_IMAGES, SHOJI_IMAGES, FUSUMA_IMAGES } from "@/data/platformImages";
 
 const VENDOR_IMAGE_POOL = [...TATAMI_CRAFT_IMAGES, ...SHOJI_IMAGES.slice(0, 5), ...FUSUMA_IMAGES.slice(0, 5)];
@@ -146,6 +147,7 @@ export default function ProviderListCard({ provider, rank, categorySlug }: Props
           >
             詳細を見る
           </Link>
+          <CompareButton providerId={provider.id} />
         </div>
       </div>
     </div>

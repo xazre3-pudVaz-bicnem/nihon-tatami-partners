@@ -57,6 +57,13 @@ export function filterAndSortProviders(sp: RawSearchParams): {
   if (isTrue(sp, "hasEstimateFree")) result = result.filter((p) => p.hasEstimateFree);
   if (isTrue(sp, "acceptsCard")) result = result.filter((p) => p.acceptsCard);
   if (isTrue(sp, "canOnlineConsult")) result = result.filter((p) => p.canOnlineConsult);
+  if (isTrue(sp, "hasPhotoEstimate")) result = result.filter((p) => p.hasPhotoEstimate);
+  if (isTrue(sp, "hasOldTatamiDisposal")) result = result.filter((p) => p.hasOldTatamiDisposal);
+  if (isTrue(sp, "acceptsInvoice")) result = result.filter((p) => p.acceptsInvoice);
+  if (isTrue(sp, "nightConsultation")) result = result.filter((p) => p.canNightConsultation);
+
+  const priceMax = get(sp, "priceMax");
+  if (priceMax) result = result.filter((p) => !p.startingPrice || p.startingPrice <= parseInt(priceMax, 10));
 
   const total = result.length;
   const sortBy = (get(sp, "sortBy") as SortKey) || "recommended";

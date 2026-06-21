@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Breadcrumbs from "@/components/common/Breadcrumbs";
 import FAQSection from "@/components/common/FAQSection";
+import BulkQuoteForm from "@/components/forms/BulkQuoteForm";
 import { getTopProviders } from "@/data/providers";
-import ProviderCard from "@/components/common/ProviderCard";
 import { createMetadata, SITE_URL } from "@/lib/metadata";
 
 export const metadata: Metadata = createMetadata({
@@ -13,142 +12,86 @@ export const metadata: Metadata = createMetadata({
   path: "/bulk-quote",
 });
 
+const faqs = [
+  { question: "一括見積もりは無料ですか？", answer: "はい、見積もり依頼・比較は無料です。実際の契約・施工はご自身で選んだ業者と直接行います。" },
+  { question: "何社まで依頼できますか？", answer: "最大5社まで同時に見積もり依頼ができます。比較しやすい3社前後がおすすめです。" },
+  { question: "しつこい営業はありませんか？", answer: "ご依頼いただいた業者からのみ連絡が届きます。希望する連絡方法を指定でき、不要な場合はやり取りを終了できます。" },
+  { question: "法人・管理会社でも使えますか？", answer: "ご利用いただけます。複数物件の原状回復など、法人向けの一括依頼にも対応する業者が掲載されています。" },
+  { question: "写真がなくても依頼できますか？", answer: "写真がなくても依頼できます。現場写真を添えると、より具体的な見積もりが受け取りやすくなります。最終金額は現地確認後に確定する場合があります。" },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
+};
+
 export default function BulkQuotePage() {
-  const providers = getTopProviders(6);
-
-  const steps = [
-    { n: "01", title: "工事内容を入力", desc: "サービスの種類・建物種別・畳数などを選ぶだけ" },
-    { n: "02", title: "業者を選ぶ", desc: "エリア対応の業者から最大5社まで選択" },
-    { n: "03", title: "まとめて依頼", desc: "選んだ業者に一括で見積もり依頼を送信" },
-    { n: "04", title: "比較して決める", desc: "届いた見積もりを比較し、納得の1社へ依頼" },
-  ];
-
-  const merits = [
-    { title: "一度の入力で複数社へ", desc: "同じ内容を何度も入力する手間がありません。" },
-    { title: "料金を比較できる", desc: "複数の見積もりを並べて、適正価格がわかります。" },
-    { title: "対応の早さもわかる", desc: "返信の速さや提案内容で業者の姿勢が見えます。" },
-  ];
-
-  const faqs = [
-    { question: "一括見積もりは無料ですか？", answer: "はい、見積もり依頼・比較は無料です。実際の契約・施工はご自身で選んだ業者と直接行います。" },
-    { question: "何社まで依頼できますか？", answer: "最大5社まで同時に見積もり依頼ができます。比較しやすい3社前後がおすすめです。" },
-    { question: "しつこい営業はありませんか？", answer: "ご依頼いただいた業者からのみ連絡が届きます。希望する連絡方法を指定でき、不要な場合はやり取りを終了できます。" },
-    { question: "法人・管理会社でも使えますか？", answer: "ご利用いただけます。複数物件の原状回復など、法人向けの一括依頼にも対応する業者が掲載されています。" },
-    { question: "写真がなくても依頼できますか？", answer: "写真がなくても依頼できます。現場写真を添えると、より具体的な見積もりが受け取りやすくなります。最終金額は現地確認後に確定する場合があります。" },
-  ];
-
-  const targetServices = [
-    "畳の表替え", "畳の裏返し", "畳の新調", "琉球畳・縁なし畳", "和紙畳・樹脂畳",
-    "ふすま張替え", "障子張替え", "和室リフォーム", "賃貸原状回復", "店舗・施設の畳",
-  ];
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
-  };
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "トップ", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "一括見積もり", item: `${SITE_URL}/bulk-quote` },
-    ],
-  };
+  const providers = getTopProviders(12);
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
-
       <div className="min-h-screen bg-shiro">
         <div className="bg-sumi">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Breadcrumbs variant="dark" items={[{ label: "トップ", href: "/" }, { label: "一括見積もり" }]} />
           </div>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-6 text-center">
-            <h1 className="text-2xl md:text-4xl text-white mb-4 leading-tight" style={{ fontFamily: "var(--font-serif)" }}>
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4">
+            <h1 className="text-2xl md:text-3xl text-white mb-3" style={{ fontFamily: "var(--font-serif)" }}>
               複数の業者にまとめて見積もり依頼
             </h1>
-            <p className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
-              1回の入力で、エリア対応の畳・内装業者に一括で見積もりを依頼。料金・対応・口コミを比較して、納得の1社を選べます。
+            <p className="text-sm text-white/60 max-w-xl">
+              1回の入力で、エリア対応の業者に一括で見積もりを依頼できます。料金・対応を比較して、納得の1社を選べます。
             </p>
-            <Link href="/quote/new" className="inline-block mt-8 bg-kincya text-white px-10 py-4 text-sm hover:bg-do transition-colors">
-              無料で一括見積もりを始める
-            </Link>
           </div>
         </div>
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          {/* ステップ */}
-          <section className="mb-12">
-            <h2 className="text-xl text-sumi mb-6 text-center" style={{ fontFamily: "var(--font-serif)" }}>
-              ご利用の流れ
-            </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {steps.map((s) => (
-                <div key={s.n} className="bg-white border border-border p-5">
-                  <span className="text-kincya text-lg font-bold">{s.n}</span>
-                  <h3 className="text-sm text-sumi mt-1 mb-1" style={{ fontFamily: "var(--font-serif)" }}>{s.title}</h3>
-                  <p className="text-xs text-sumi/60 leading-relaxed">{s.desc}</p>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* フォーム */}
+            <div className="lg:col-span-2 bg-white border border-border p-6 sm:p-8">
+              <BulkQuoteForm providers={providers} />
             </div>
-          </section>
 
-          {/* 対象サービス */}
-          <section className="mb-12">
-            <h2 className="text-xl text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-              一括見積もりの対象サービス
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {targetServices.map((s) => (
-                <span key={s} className="text-sm bg-white border border-border px-4 py-2 text-sumi/70">
-                  {s}
-                </span>
-              ))}
+            {/* 右側説明 */}
+            <div className="space-y-5">
+              <div className="bg-white border border-border p-5">
+                <h2 className="text-base text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>一括見積もりとは</h2>
+                <ul className="space-y-2.5 text-xs text-sumi/70">
+                  {[
+                    "1回の入力で最大5社へ同時依頼",
+                    "料金・対応内容・返信速度を比較",
+                    "気に入った1社に正式依頼",
+                    "見積もり依頼は無料",
+                  ].map((t) => (
+                    <li key={t} className="flex items-start gap-2">
+                      <span className="text-igusa shrink-0 mt-0.5">✓</span>{t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-kiji/40 border border-kiji p-5">
+                <h3 className="text-sm text-sumi mb-2 font-medium">業者を選んで比較</h3>
+                <p className="text-xs text-sumi/60 leading-relaxed mb-3">一覧から気になる業者を選べます。口コミ評価・料金・対応業種を確認しながら選んでください。</p>
+                <p className="text-xs text-sumi/40">※ 掲載業者は申請情報に基づき表示。資格・保険は業者申告情報です。</p>
+              </div>
+
+              <div className="bg-white border border-border p-5">
+                <h3 className="text-sm text-sumi mb-2 font-medium">こんな方に</h3>
+                <ul className="space-y-1.5 text-xs text-sumi/60">
+                  <li>・ 複数業者の料金を比較したい</li>
+                  <li>・ どこに頼めばよいか迷っている</li>
+                  <li>・ 賃貸退去で急ぎの工事がある</li>
+                  <li>・ 複数物件をまとめて依頼したい</li>
+                </ul>
+              </div>
             </div>
-          </section>
-
-          {/* メリット */}
-          <section className="mb-12 bg-kiji/40 border border-kiji p-6">
-            <h2 className="text-xl text-sumi mb-6" style={{ fontFamily: "var(--font-serif)" }}>
-              一括見積もりのメリット
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              {merits.map((m) => (
-                <div key={m.title}>
-                  <div className="w-8 h-8 bg-igusa/10 text-igusa flex items-center justify-center mb-2 text-sm">✓</div>
-                  <h3 className="text-sm font-medium text-sumi mb-1">{m.title}</h3>
-                  <p className="text-xs text-sumi/60 leading-relaxed">{m.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* 対応業者 */}
-          <section className="mb-12">
-            <h2 className="text-xl text-sumi mb-6" style={{ fontFamily: "var(--font-serif)" }}>
-              見積もり依頼できる業者の例
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {providers.map((p) => (
-                <ProviderCard key={p.id} provider={p} />
-              ))}
-            </div>
-          </section>
-
-          <FAQSection items={faqs} title="一括見積もりに関するよくある質問" />
-
-          <section className="mt-10 text-center bg-sumi py-12 px-6">
-            <h2 className="text-xl md:text-2xl text-white mb-3" style={{ fontFamily: "var(--font-serif)" }}>
-              まずは無料で見積もりを比較
-            </h2>
-            <p className="text-sm text-white/60 mb-6 max-w-xl mx-auto">入力は数分で完了します。気軽にお試しください。</p>
-            <Link href="/quote/new" className="inline-block bg-kincya text-white px-10 py-4 text-sm hover:bg-do transition-colors">
-              一括見積もりを始める
-            </Link>
-          </section>
+          </div>
         </div>
+
+        <FAQSection items={faqs} title="一括見積もりに関するよくある質問" />
       </div>
     </>
   );

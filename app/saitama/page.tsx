@@ -20,15 +20,6 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/saitama` },
 };
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "トップ", item: SITE_URL },
-    { "@type": "ListItem", position: 2, name: "埼玉県", item: `${SITE_URL}/saitama` },
-  ],
-};
-
 const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -69,7 +60,6 @@ export default function SaitamaTopPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
