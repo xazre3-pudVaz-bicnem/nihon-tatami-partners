@@ -531,7 +531,7 @@ function ComparePageContent() {
                           {p ? (
                             <div className="space-y-2">
                               <Link
-                                href={`/quote/new?providerId=${p.id}`}
+                                href={`/bulk-quote/new?providerId=${p.id}`}
                                 className="block text-center bg-kincya text-white text-xs py-2.5 hover:bg-do transition-colors tracking-wide"
                               >
                                 見積もり依頼

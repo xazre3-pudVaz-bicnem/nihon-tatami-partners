@@ -192,7 +192,7 @@ export default async function MatchingResultPage({ searchParams }: Props) {
                       比較に追加
                     </Link>
                     <Link
-                      href={`/quote/new?provider=${provider.id}`}
+                      href={`/bulk-quote/new?provider=${provider.id}`}
                       className="flex-1 text-center text-xs font-medium text-white bg-kincya rounded-lg py-2 hover:bg-kincya/90 transition-colors duration-150"
                     >
                       見積もりを依頼
@@ -233,7 +233,7 @@ export default async function MatchingResultPage({ searchParams }: Props) {
                 複数業者に同時見積もり依頼して、料金・日程を比較してから選べます。
               </p>
               <Link
-                href="/quote/new"
+                href="/bulk-quote/new"
                 className="block text-center text-xs font-medium bg-kincya text-white rounded-lg py-2 hover:bg-kincya/90 transition-colors duration-150"
               >
                 一括見積もりに進む

@@ -205,7 +205,7 @@ export default async function ProviderServiceDetailPage({ params }: Props) {
                 <Link href={`/booking/new?provider=${id}&category=${service.categorySlug}`} className="block text-center bg-kincya text-white py-2.5 text-sm hover:bg-do transition-colors mb-2">
                   このサービスを予約
                 </Link>
-                <Link href={`/quote/new?provider=${id}&category=${service.categorySlug}`} className="block text-center border border-ai text-ai py-2.5 text-sm hover:bg-ai hover:text-white transition-colors">
+                <Link href={`/bulk-quote/new?provider=${id}&category=${service.categorySlug}`} className="block text-center border border-ai text-ai py-2.5 text-sm hover:bg-ai hover:text-white transition-colors">
                   見積もりを依頼
                 </Link>
               </div>

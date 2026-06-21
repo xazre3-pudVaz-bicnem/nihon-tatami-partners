@@ -213,7 +213,7 @@ function MaterialCard({
           この素材で業者を探す
         </Link>
         <Link
-          href="/quote/new"
+          href="/bulk-quote/new"
           className="flex-1 text-center text-xs font-medium text-white bg-kincya rounded-lg py-2 hover:bg-kincya/90 transition-colors duration-150"
         >
           見積もりに進む

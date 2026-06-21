@@ -320,7 +320,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
                 {/* CTAボタン（ヘッダー内） */}
                 <div className="hidden md:flex items-center gap-3 mt-4">
                   <Link
-                    href={`/quote/new?providerId=${provider.id}`}
+                    href={`/bulk-quote/new?providerId=${provider.id}`}
                     className="bg-kincya text-white text-sm px-6 py-2.5 hover:bg-do transition-colors tracking-wide"
                   >
                     この業者に見積もり依頼
@@ -786,7 +786,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
               <div className="sticky top-24 space-y-4">
                 <div className="bg-sumi text-white p-5">
                   <p className="text-xs text-white/60 mb-3">この業者に見積もりを依頼する</p>
-                  <Link href={`/quote/new?providerId=${provider.id}`}
+                  <Link href={`/bulk-quote/new?providerId=${provider.id}`}
                     className="block w-full text-center bg-kincya py-3 text-sm font-medium tracking-wide hover:bg-do transition-colors mb-2">
                     無料見積もりを依頼
                   </Link>
@@ -818,7 +818,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
 
                 <div className="bg-cloud border border-border p-4 text-center">
                   <p className="text-xs text-sumi/60 mb-2">複数業者から見積もりを取りたい方</p>
-                  <Link href="/quote/new"
+                  <Link href="/bulk-quote/new"
                     className="block w-full border border-sumi/30 text-sumi text-sm py-2.5 hover:bg-sumi hover:text-white transition-all duration-300 tracking-wide">
                     一括見積もりを依頼する
                   </Link>
@@ -853,7 +853,7 @@ export default function ProviderDetailClient({ provider, reviews, workCases, ser
 
         {/* スマホ下部固定CTA */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border px-3 py-2 grid grid-cols-3 gap-2">
-          <Link href={`/quote/new?providerId=${provider.id}`}
+          <Link href={`/bulk-quote/new?providerId=${provider.id}`}
             className="text-center py-3 bg-kincya text-white text-xs tracking-wide">
             見積依頼
           </Link>

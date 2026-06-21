@@ -171,7 +171,7 @@ export default function PriceCalculator() {
         </div>
 
         <Link
-          href="/quote/new"
+          href="/bulk-quote/new"
           className="block w-full text-center bg-kincya text-white py-3 text-sm tracking-wider hover:bg-do transition-colors duration-300"
         >
           この条件で業者に一括見積もりを依頼

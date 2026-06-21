@@ -90,6 +90,7 @@ const CATEGORY_HREFS = [
   "/saitama/washitsu/chashitsu",
   "/saitama/ryokan/tatami",
   "/saitama/temple/tatami",
+  "/saitama/shrine/tatami",
   "/saitama/rental-restoration/tatami",
   "/saitama/cross/harikae",
   "/saitama/floor/cushion-floor",
@@ -101,46 +102,103 @@ const CATEGORY_HREFS = [
 
 // ─── チェック対象: ナビゲーション・フッターURL ────────────────────────────
 const NAV_HREFS = [
+  // トップ・検索
   "/",
   "/search",
   "/saitama",
+  "/categories",
+  // 見積・依頼フロー
+  "/request/start",
+  "/request/diagnosis",
+  "/request/result",
+  "/request/complete",
+  "/matching",
+  "/matching/result",
+  "/bulk-quote",
+  "/bulk-quote/new",
+  "/bulk-quote/complete",
+  "/bulk-quote/demo",
+  "/bulk-quote/demo/compare",
+  "/photo-estimate",
+  "/compare",
+  // 情報・ガイド
   "/prices",
   "/cases",
   "/articles",
-  "/bulk-quote",
-  "/bulk-quote/new",
-  "/compare",
-  "/categories",
-  "/mypage",
-  "/pro",
-  "/pro/register",
-  "/matching",
-  "/request/start",
-  "/photo-estimate",
+  "/questions",
+  "/questions/new",
   "/concierge",
   "/calculator",
-  "/questions",
   "/map",
   "/guide",
   "/guide/how-to-choose",
   "/guide/omotegae-or-shinchou",
   "/guide/estimate-checklist",
   "/guide/rental-restoration",
+  // 法人向け
   "/for-real-estate",
   "/for-property-management",
   "/for-landlords",
   "/for-ryokan",
   "/for-temple-shrine",
+  "/for-store",
   "/business/bulk-request",
+  // ユーザーマイページ
+  "/mypage",
+  "/mypage/requests",
+  "/mypage/quotes",
+  "/mypage/bookings",
+  "/mypage/messages",
+  "/mypage/favorites",
+  "/mypage/compare",
+  "/mypage/diagnosis",
+  "/mypage/photos",
+  "/mypage/reviews",
+  "/mypage/settings",
+  // 業者ダッシュボード
+  "/dashboard",
+  "/dashboard/profile",
+  "/dashboard/services",
+  "/dashboard/services/new",
+  "/dashboard/prices",
+  "/dashboard/areas",
+  "/dashboard/photos",
+  "/dashboard/cases",
+  "/dashboard/quotes",
+  "/dashboard/bookings",
+  "/dashboard/messages",
+  "/dashboard/reviews",
+  "/dashboard/analytics",
+  "/dashboard/calendar",
+  "/dashboard/questions",
+  "/dashboard/settings",
+  // 管理者
+  "/admin",
+  "/admin/providers",
+  "/admin/provider-applications",
+  "/admin/users",
+  "/admin/services",
+  "/admin/categories",
+  "/admin/reviews",
+  "/admin/bookings",
+  "/admin/quotes",
+  "/admin/messages",
+  "/admin/cases",
+  "/admin/cities",
+  "/admin/seo-pages",
+  "/admin/articles",
+  "/admin/faqs",
+  "/admin/reports",
+  "/admin/settings",
+  // 業者プロフィール
+  "/pro",
+  "/pro/register",
+  // 静的
   "/about",
   "/contact",
   "/terms",
   "/privacy",
   "/safety",
-  "/request/diagnosis",
-  "/request/result",
-  "/dashboard/questions",
-  "/dashboard/prices",
 ];
 
 // ─── チェック対象: 都市URL ────────────────────────────────────────────────
@@ -168,6 +226,7 @@ const CITY_GROUP_HREFS = [
 const LEGACY_HREFS = [
   "/saitama/tatami-omotegae",
   "/saitama/tatami-shinchou",
+  "/saitama/tatami-uragaeshi",
   "/saitama/ryukyu-tatami",
   "/saitama/fusuma-harikae",
   "/saitama/shoji-harikae",
@@ -177,6 +236,9 @@ const LEGACY_HREFS = [
   "/saitama/tatami/kokusan",              // → kokusan-igusa へリダイレクト確認
   "/saitama/rental-restoration/full",     // → rental-restoration/tatami へリダイレクト確認
   "/request/diagnose",                    // → request/start へリダイレクト確認
+  "/articles/tatami-omotegae-shincho-difference", // → 正規記事スラッグへ
+  "/cases/case-001",                      // → /cases/wc-001
+  "/questions/question-001",              // → /questions/q-001
 ];
 
 // next.config.ts の redirects に定義されているソースURLを読む

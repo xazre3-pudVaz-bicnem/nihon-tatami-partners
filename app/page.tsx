@@ -497,7 +497,7 @@ function RecentReviewsSection({ reviews }: { reviews: ReturnType<typeof getRecen
           <h2 className="text-2xl md:text-3xl text-sumi" style={{ fontFamily: "var(--font-serif)" }}>
             最新の口コミ
           </h2>
-          <p className="text-xs text-sumi/60 mt-1">実際に利用したユーザーの声</p>
+          <p className="text-xs text-sumi/60 mt-1">掲載イメージの口コミ例 — 本番公開時は実際の利用者口コミに差し替えます</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {reviews.map((r) => (

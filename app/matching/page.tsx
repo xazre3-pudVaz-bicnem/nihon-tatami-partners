@@ -303,7 +303,7 @@ export default function MatchingPage() {
                         比較に追加
                       </Link>
                       <Link
-                        href={`/quote/new?provider=${provider.id}`}
+                        href={`/bulk-quote/new?provider=${provider.id}`}
                         className="flex-1 text-center text-xs font-medium text-white bg-kincya rounded-lg py-2 hover:bg-kincya/90 transition-colors duration-150"
                       >
                         見積もりを依頼

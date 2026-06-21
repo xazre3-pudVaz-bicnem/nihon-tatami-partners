@@ -226,8 +226,164 @@ export default async function SearchPage({ searchParams }: Props) {
               </section>
             )}
 
+            {/* 料金相場セクション */}
+            <section className="mt-10 bg-white border border-border p-6">
+              <h2 className="text-lg text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
+                畳・和室工事の料金相場
+              </h2>
+              <p className="text-xs text-sumi/50 mb-4">※ 目安料金です。素材・サイズ・オプションにより変動します。必ず見積もりでご確認ください。</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border border-border">
+                  <thead>
+                    <tr className="bg-kiji/60 text-sumi/70">
+                      <th className="text-left px-3 py-2.5 font-medium border-b border-border">工事の種類</th>
+                      <th className="text-left px-3 py-2.5 font-medium border-b border-border">目安料金（1枚）</th>
+                      <th className="text-left px-3 py-2.5 font-medium border-b border-border hidden sm:table-cell">こんな時に</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sumi/70">
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">裏返し</td>
+                      <td className="px-3 py-2.5 text-do font-medium">2,500円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">新調・表替えから3〜5年。裏面がきれいな場合に</td>
+                    </tr>
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">表替え（い草）</td>
+                      <td className="px-3 py-2.5 text-do font-medium">3,200円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">色あせ・毛羽立ちが気になってきたら</td>
+                    </tr>
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">表替え（和紙・樹脂）</td>
+                      <td className="px-3 py-2.5 text-do font-medium">5,000円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">耐久性・防水・ペット対応を重視する場合</td>
+                    </tr>
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">新調（い草）</td>
+                      <td className="px-3 py-2.5 text-do font-medium">8,000円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">踏むと沈む・15年以上経過した場合</td>
+                    </tr>
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">琉球・縁なし畳（新調）</td>
+                      <td className="px-3 py-2.5 text-do font-medium">15,000円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">モダンな和室・半畳サイズにしたい場合</td>
+                    </tr>
+                    <tr className="border-b border-kiji">
+                      <td className="px-3 py-2.5 font-medium text-sumi">ふすま張替え</td>
+                      <td className="px-3 py-2.5 text-do font-medium">3,500円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">破れ・日焼けが目立ってきたら</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 py-2.5 font-medium text-sumi">和室リフォーム</td>
+                      <td className="px-3 py-2.5 text-do font-medium">50,000円〜</td>
+                      <td className="px-3 py-2.5 text-xs hidden sm:table-cell">畳・建具・壁をまとめて一新したい場合</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/prices" className="text-sm text-ai hover:underline">料金相場をもっと詳しく →</Link>
+                <Link href="/bulk-quote" className="text-sm bg-kincya text-white px-4 py-2 hover:bg-do transition-colors font-medium">
+                  無料で見積もりを比較する
+                </Link>
+              </div>
+            </section>
+
+            {/* かんたん診断CTA */}
+            <section className="mt-6 bg-igusa/10 border border-igusa/30 p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="flex-1">
+                  <p className="text-xs text-igusa font-medium mb-1">3問で完了</p>
+                  <h2 className="text-base text-sumi mb-1" style={{ fontFamily: "var(--font-serif)" }}>
+                    どの工事が必要か迷っていませんか？
+                  </h2>
+                  <p className="text-xs text-sumi/60">
+                    畳の状態・築年数・ご要望を答えるだけで、表替え・裏返し・新調のどれが適切かをご案内します。
+                  </p>
+                </div>
+                <Link
+                  href="/diagnose"
+                  className="shrink-0 inline-flex items-center gap-2 text-sm bg-sumi text-white px-5 py-3 hover:bg-sumi/80 transition-colors font-medium"
+                >
+                  かんたん診断を試す
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </section>
+
+            {/* 業者選びのポイント */}
+            <section className="mt-6 bg-white border border-border p-6">
+              <h2 className="text-lg text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                失敗しない業者選びのポイント
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="flex gap-3">
+                  <div className="shrink-0 w-8 h-8 bg-kincya/10 text-kincya flex items-center justify-center text-sm font-bold">1</div>
+                  <div>
+                    <p className="text-sm font-medium text-sumi mb-1">複数社の見積もりを比較する</p>
+                    <p className="text-xs text-sumi/60 leading-relaxed">
+                      同じ工事でも業者により料金・素材・施工方法が異なります。最低3社の見積もりを比較して適正価格を把握しましょう。
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="shrink-0 w-8 h-8 bg-kincya/10 text-kincya flex items-center justify-center text-sm font-bold">2</div>
+                  <div>
+                    <p className="text-sm font-medium text-sumi mb-1">資格・保険の有無を確認する</p>
+                    <p className="text-xs text-sumi/60 leading-relaxed">
+                      一級畳製作技能士の在籍や損害賠償保険への加入は安心の目安のひとつです。申告情報のため、詳細は各業者へご確認ください。
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="shrink-0 w-8 h-8 bg-kincya/10 text-kincya flex items-center justify-center text-sm font-bold">3</div>
+                  <div>
+                    <p className="text-sm font-medium text-sumi mb-1">口コミ・施工実績を参考にする</p>
+                    <p className="text-xs text-sumi/60 leading-relaxed">
+                      評価の高さだけでなく、口コミ件数・施工実績数もあわせて確認しましょう。コミュニケーションや仕上がりへの評価内容も参考になります。
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="shrink-0 w-8 h-8 bg-kincya/10 text-kincya flex items-center justify-center text-sm font-bold">4</div>
+                  <div>
+                    <p className="text-sm font-medium text-sumi mb-1">追加費用の条件を事前に確認する</p>
+                    <p className="text-xs text-sumi/60 leading-relaxed">
+                      見積もり時に、古畳の処分費用・家具移動費・出張費・消費税の内訳を確認しましょう。後から費用が増えるトラブルを防げます。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* 関連カテゴリ */}
+            <section className="mt-6 bg-kiji/40 border border-border p-6">
+              <h2 className="text-base text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
+                サービスから絞り込む
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {POPULAR_CATEGORY_CONFIGS.map((c) => (
+                  <Link
+                    key={c.slug}
+                    href={`/search?category=${c.slug}${cityLabel ? `&city=${encodeURIComponent(cityLabel)}` : ""}`}
+                    className={`text-sm border px-4 py-2 transition-colors ${
+                      categorySlug === c.slug
+                        ? "border-kincya bg-kincya text-white"
+                        : "border-border text-sumi/70 bg-white hover:border-ai hover:text-ai"
+                    }`}
+                  >
+                    {c.name}
+                    {c.priceFrom && (
+                      <span className="ml-1.5 text-xs opacity-60">{c.priceFrom.toLocaleString()}円〜</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </section>
+
             {/* SEO本文 */}
-            <section className="mt-8 bg-white border border-border p-6">
+            <section className="mt-6 bg-white border border-border p-6">
               <h2 className="text-lg text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>
                 {cityLabel ? `${cityLabel}で` : "埼玉県で"}畳・和室の業者を選ぶには
               </h2>
@@ -251,7 +407,7 @@ export default async function SearchPage({ searchParams }: Props) {
 
               {/* 業者選びの注意点 */}
               <h3 className="text-base text-sumi mb-2 font-medium">埼玉県で業者を選ぶときの5つの注意点</h3>
-              <ol className="text-sm text-sumi/70 leading-relaxed mb-6 space-y-1.5 list-decimal pl-5">
+              <ol className="text-sm text-sumi/70 leading-relaxed mb-3 space-y-1.5 list-decimal pl-5">
                 <li>見積もりの内訳（材料費・施工費・出張費・古畳処分費）を確認する</li>
                 <li>追加費用が発生する条件を事前に書面で確認する</li>
                 <li>口コミ評価と施工実績の件数をあわせて見る</li>
@@ -259,47 +415,8 @@ export default async function SearchPage({ searchParams }: Props) {
                 <li>対応エリア・希望時期・即日対応の可否を確認する</li>
               </ol>
 
-              {/* 料金相場の表 */}
-              <h3 className="text-base text-sumi mb-2 font-medium">料金相場の目安（1枚あたり）</h3>
-              <div className="overflow-x-auto mb-3">
-                <table className="w-full text-sm border border-border">
-                  <thead>
-                    <tr className="bg-kiji/60 text-sumi/70">
-                      <th className="text-left px-3 py-2 font-medium border-b border-border">工事</th>
-                      <th className="text-left px-3 py-2 font-medium border-b border-border">目安料金</th>
-                      <th className="text-left px-3 py-2 font-medium border-b border-border">備考</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sumi/70">
-                    <tr className="border-b border-kiji"><td className="px-3 py-2">表替え</td><td className="px-3 py-2 text-do">3,200円〜</td><td className="px-3 py-2 text-xs">素材（い草・和紙・琉球）で変動。見積もりで確認</td></tr>
-                    <tr className="border-b border-kiji"><td className="px-3 py-2">裏返し</td><td className="px-3 py-2 text-do">2,500円〜</td><td className="px-3 py-2 text-xs">1枚につき1回まで</td></tr>
-                    <tr><td className="px-3 py-2">新調</td><td className="px-3 py-2 text-do">8,000円〜</td><td className="px-3 py-2 text-xs">畳床・い草のグレードで変動。見積もりで確認</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-xs text-sumi/40 mb-4">※ あくまで一般的な目安です。正確な料金は各業者の見積もりをご確認ください。</p>
-
               <div className="flex flex-wrap gap-3">
-                <Link href="/prices" className="text-sm text-ai hover:underline">料金相場をもっと詳しく →</Link>
                 <Link href="/articles" className="text-sm text-ai hover:underline">畳のコラムを読む →</Link>
-              </div>
-            </section>
-
-            {/* 関連カテゴリ */}
-            <section className="mt-8">
-              <h2 className="text-base text-sumi mb-4" style={{ fontFamily: "var(--font-serif)" }}>
-                人気のサービスから探す
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {POPULAR_CATEGORY_CONFIGS.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={`/search?category=${c.slug}${cityLabel ? `&city=${encodeURIComponent(cityLabel)}` : ""}`}
-                    className="text-sm border border-border text-sumi/70 hover:border-ai hover:text-ai transition-colors px-4 py-2"
-                  >
-                    {c.name}
-                  </Link>
-                ))}
               </div>
             </section>
           </div>
@@ -316,37 +433,32 @@ export default async function SearchPage({ searchParams }: Props) {
       <FAQSection
         items={[
           {
-            question: "見積もりは無料ですか？",
+            question: "業者を検索・比較するのに費用はかかりますか？",
             answer:
-              "多くの掲載業者が無料見積もりに対応しています。各業者の詳細ページや絞り込みの「無料見積もり」で確認できます。複数業者に依頼して比較することをおすすめします。",
+              "業者の検索・一覧表示・詳細ページの閲覧はすべて無料です。見積もり依頼・問い合わせも無料でご利用いただけます。料金が発生するのは、業者との間で実際に工事を発注した場合のみです。",
           },
           {
-            question: "畳の表替えと新調はどう違いますか？",
+            question: "絞り込み条件はどのように使えばよいですか？",
             answer:
-              "表替えは畳表（ゴザ）だけを新しくする工事、新調は畳床ごと作り替える工事です。畳床がしっかりしていれば表替え、踏み込みが沈むほど傷んでいれば新調が目安です。",
+              "市区町村・サービス種別・口コミ評価・資格・対応オプションで絞り込めます。スマホはページ下部の「絞り込み」ボタン、PCは左サイドバーをご利用ください。複数条件を組み合わせることもできます。",
           },
           {
-            question: "対応エリア外でも依頼できますか？",
+            question: "複数の業者にまとめて見積もり依頼できますか？",
             answer:
-              "業者ごとに対応エリアが設定されています。絞り込みで市区町村を指定すると、そのエリアに対応する業者だけを表示できます。エリア外でも相談に応じる業者もあります。",
+              "「一括見積もり」機能を使うと、希望条件を一度入力するだけで複数業者に同時に見積もりを依頼できます。各業者に個別に連絡する手間が省け、料金・対応を比較しやすくなります。",
           },
           {
-            question: "裏返しと表替えはどちらを選べばよいですか？",
+            question: "掲載業者の情報はどのように確認されていますか？",
             answer:
-              "新調や前回の表替えから3〜5年で、畳表の裏面がまだきれいなら裏返しが目安です。表面の傷みが進んでいる場合や、すでに裏返し済みの場合は表替えになります。判断に迷う場合は現地確認を依頼してください。",
+              "掲載申請時に基本情報の確認を行っています。資格・保険・対応エリアなどは業者の申告情報です。詳細は各業者の詳細ページおよび直接のお問い合わせでご確認ください。",
           },
           {
-            question: "古い畳の処分もお願いできますか？",
+            question: "特定の工事（ふすま・障子など）に対応する業者だけを探せますか？",
             answer:
-              "新調時など、古畳の処分に対応している業者があります。処分費用がかかる場合があるため、見積もり時にご確認ください。",
-          },
-          {
-            question: "法人・管理会社からの依頼もできますか？",
-            answer:
-              "不動産会社・管理会社・賃貸オーナー向けに、請求書払いや複数物件の一括対応に応じる業者が掲載されています。法人・施設向けページもあわせてご覧ください。",
+              "サービス種別の絞り込みで「ふすま張替え」「障子張替え」「和室リフォーム」など工事の種類を指定して検索できます。カテゴリ別の検索ページもご利用ください。",
           },
         ]}
-        title="業者選びに関するよくある質問"
+        title="業者検索に関するよくある質問"
       />
 
       <CityLinkGrid title="市区町村から探す" />

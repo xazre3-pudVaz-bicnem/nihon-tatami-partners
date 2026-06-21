@@ -4,25 +4,30 @@ import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
-const BOOL_FILTERS: { key: string; label: string }[] = [
-  { key: "sameDayResponse", label: "即日対応" },
-  { key: "weekendResponse", label: "土日対応" },
-  { key: "hasEstimateFree", label: "無料見積もり" },
-  { key: "hasPhotoEstimate", label: "写真見積対応" },
-  { key: "hasFurnitureMove", label: "家具移動対応" },
-  { key: "hasLicense", label: "一級技能士" },
-  { key: "hasInsurance", label: "損害賠償保険加入" },
-  { key: "acceptsCorporate", label: "法人対応可" },
-  { key: "acceptsRealEstate", label: "不動産・管理会社対応" },
-  { key: "acceptsRyokan", label: "旅館・宿泊施設対応" },
-  { key: "acceptsTempleShrine", label: "寺社・神社対応" },
-  { key: "parkingFree", label: "駐車場代込み" },
+const SERVICE_FILTERS: { key: string; label: string }[] = [
+  { key: "hasLicense", label: "一級畳製作技能士" },
+  { key: "hasInsurance", label: "損害保険加入申告あり" },
+  { key: "acceptsCorporate", label: "法人対応" },
+  { key: "acceptsRealEstate", label: "不動産会社対応" },
+  { key: "acceptsRyokan", label: "旅館対応" },
+  { key: "acceptsTempleShrine", label: "寺社対応" },
   { key: "hasOldTatamiDisposal", label: "古畳処分対応" },
   { key: "acceptsCard", label: "カード払い対応" },
   { key: "acceptsInvoice", label: "インボイス対応" },
+  { key: "parkingFree", label: "駐車場代込み" },
+];
+
+const OPTION_FILTERS: { key: string; label: string }[] = [
+  { key: "sameDayResponse", label: "即日相談" },
+  { key: "weekendResponse", label: "土日対応" },
+  { key: "hasPhotoEstimate", label: "写真見積もり可" },
   { key: "canOnlineConsult", label: "オンライン相談可" },
+  { key: "hasFurnitureMove", label: "家具移動対応" },
+  { key: "hasEstimateFree", label: "無料見積もり" },
   { key: "nightConsultation", label: "夜間相談可" },
 ];
+
+const BOOL_FILTERS = [...SERVICE_FILTERS, ...OPTION_FILTERS];
 
 const BOOL_FILTER_KEYS = BOOL_FILTERS.map((f) => f.key);
 const RADIO_FILTER_KEYS = ["city", "rating", "reviewMin"];
@@ -215,11 +220,29 @@ export default function FilterDrawer({ className }: FilterDrawerProps) {
                   </div>
                 </section>
 
-                {/* 対応可能時期 */}
+                {/* 対応サービス */}
                 <section>
-                  <h3 className="text-sm font-medium text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>対応・サービス</h3>
+                  <h3 className="text-sm font-medium text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>対応サービス</h3>
                   <div className="grid grid-cols-2 gap-2">
-                    {BOOL_FILTERS.map((f) => (
+                    {SERVICE_FILTERS.map((f) => (
+                      <label key={f.key} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={isLocalChecked(f.key)}
+                          onChange={() => toggleLocalBool(f.key)}
+                          className="accent-kincya"
+                        />
+                        <span className="text-xs text-sumi/80">{f.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+
+                {/* 対応オプション */}
+                <section>
+                  <h3 className="text-sm font-medium text-sumi mb-3" style={{ fontFamily: "var(--font-serif)" }}>対応オプション</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {OPTION_FILTERS.map((f) => (
                       <label key={f.key} className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="checkbox"

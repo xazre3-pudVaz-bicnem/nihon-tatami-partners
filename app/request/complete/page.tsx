@@ -68,7 +68,7 @@ const NEXT_ACTIONS = [
     icon: "📝",
     title: "一括見積もりに進む",
     description: "複数の業者に同時見積もり依頼。料金・日程を比較して選べます。",
-    href: "/quote/new",
+    href: "/bulk-quote/new",
     primary: true,
   },
   {

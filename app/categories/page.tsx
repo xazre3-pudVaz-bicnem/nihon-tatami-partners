@@ -28,7 +28,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       alternates: { canonical: `${SITE_URL}/categories?group=washitsu` },
     };
   }
-  if (group === "restoration") {
+  if (group === "restoration" || group === "interior" || group === "naisou") {
     return {
       title: "原状回復・内装工事カテゴリ一覧 | 日本畳パートナーズ",
       description:
@@ -46,10 +46,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 const ALL_GROUPS: GroupKey[] = ["tatami", "washitsu", "restoration"];
 
+// 旧グループ名・エイリアスのマッピング
+const GROUP_ALIAS: Record<string, GroupKey> = {
+  interior: "restoration",
+  naisou: "restoration",
+  reform: "washitsu",
+  tatami: "tatami",
+  washitsu: "washitsu",
+  restoration: "restoration",
+};
+
 export default async function CategoriesPage({ searchParams }: Props) {
   const { group } = await searchParams;
-  const GROUPS: GroupKey[] = group
-    ? [group as GroupKey]
+  const normalizedGroup = group ? (GROUP_ALIAS[group] ?? null) : null;
+  const GROUPS: GroupKey[] = normalizedGroup
+    ? [normalizedGroup]
     : ALL_GROUPS;
 
   return (
@@ -65,8 +76,8 @@ export default async function CategoriesPage({ searchParams }: Props) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <h1 className="text-2xl md:text-3xl text-sumi mb-2" style={{ fontFamily: "var(--font-serif)" }}>
-          {group && CATEGORY_GROUP_LABELS[group as GroupKey]
-            ? `${CATEGORY_GROUP_LABELS[group as GroupKey]}カテゴリ一覧`
+          {normalizedGroup && CATEGORY_GROUP_LABELS[normalizedGroup]
+            ? `${CATEGORY_GROUP_LABELS[normalizedGroup]}カテゴリ一覧`
             : "サービスカテゴリ一覧"}
         </h1>
         <p className="text-sm text-sumi/60 mb-6">埼玉県内の畳・和室・内装工事サービスを探せます。</p>
@@ -76,7 +87,7 @@ export default async function CategoriesPage({ searchParams }: Props) {
           <Link
             href="/categories"
             className={`text-xs px-3 py-1.5 border transition-colors duration-150 ${
-              !group
+              !normalizedGroup
                 ? "bg-sumi text-white border-sumi"
                 : "border-border text-sumi/60 hover:border-sumi/40"
             }`}
@@ -88,7 +99,7 @@ export default async function CategoriesPage({ searchParams }: Props) {
               key={g}
               href={`/categories?group=${g}`}
               className={`text-xs px-3 py-1.5 border transition-colors duration-150 ${
-                group === g
+                normalizedGroup === g
                   ? "bg-sumi text-white border-sumi"
                   : "border-border text-sumi/60 hover:border-sumi/40"
               }`}

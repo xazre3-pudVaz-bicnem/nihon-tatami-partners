@@ -30,14 +30,14 @@ const STEP_LABELS = [
 ];
 
 const STEP1_OPTIONS = [
-  "畳をきれいにしたい",
-  "畳が沈む・へこむ",
-  "畳が日焼けしている",
+  "畳が色あせている",
+  "畳が毛羽立っている",
+  "畳が沈む・踏むと痛い",
   "カビ・ダニ・ニオイが気になる",
   "ペット汚れがある",
   "ふすま・障子も直したい",
-  "退去前・入居前に直したい",
-  "旅館・寺社・店舗の和室",
+  "退去前に直したい（原状回復）",
+  "旅館・寺社・店舗の和室を直したい",
   "何を頼めばいいか分からない",
 ];
 
@@ -55,14 +55,15 @@ const STEP2_OPTIONS = [
 ];
 
 const STEP3_OPTIONS = [
-  "色あせ",
-  "毛羽立ち",
+  "日焼け",
   "破れ",
   "沈み",
   "湿気・カビ",
   "ダニ",
   "ニオイ",
+  "焦げ跡",
   "ペット汚れ",
+  "水濡れ",
   "よく分からない",
 ];
 
@@ -76,12 +77,10 @@ const STEP4_OPTIONS = [
 ];
 
 const STEP5_OPTIONS = [
-  "できるだけ早く",
-  "1週間以内",
+  "できるだけ早く（1週間以内）",
   "1ヶ月以内",
   "3ヶ月以内",
-  "退去日まで",
-  "未定",
+  "時期は未定",
 ];
 
 const TOTAL_STEPS = 6; // タイトル画面を除くステップ数
@@ -211,7 +210,7 @@ export default function RequestWizard({ onComplete }: Props) {
     if (step === 3) return step3.length > 0;
     if (step === 4) return step4 !== "";
     if (step === 5) return step5 !== "";
-    if (step === 6) return contact.name.trim() !== "" && contact.city.trim() !== "";
+    if (step === 6) return true; // 連絡先はすべて任意
     return true;
   };
 
@@ -239,7 +238,7 @@ export default function RequestWizard({ onComplete }: Props) {
     } else {
       // デフォルト: URLパラメータで結果ページへ遷移
       const result = encodeURIComponent(
-        JSON.stringify({ service: "tatami-omotegae", size: step4, schedule: step5 })
+        JSON.stringify({ service: "tatami-omotegae", size: step4, schedule: step5, type: step1[0] ?? "" })
       );
       router.push(`/request/complete?result=${result}`);
     }
@@ -324,14 +323,17 @@ export default function RequestWizard({ onComplete }: Props) {
 
       {step === 6 && (
         <div>
-          <h2 className="text-base font-bold text-sumi mb-1">連絡先を入力してください</h2>
-          <p className="text-xs text-sumi/55 mb-4">
-            結果をお送りするために使用します。<span className="text-do">＊</span>は必須項目です。
-          </p>
+          <h2 className="text-base font-bold text-sumi mb-1">お名前・ご連絡先（任意）</h2>
+          <div className="flex items-start gap-2 bg-igusa/10 border border-igusa/30 rounded-lg px-3 py-2.5 mb-4">
+            <span className="text-igusa text-sm mt-0.5 flex-shrink-0">✓</span>
+            <p className="text-xs text-sumi/70 leading-relaxed">
+              登録不要で見積もりを依頼できます。以下の項目はすべて任意です。入力しなくても診断結果を確認できます。
+            </p>
+          </div>
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-sumi/70 mb-1">
-                お名前<span className="text-do ml-1">＊</span>
+                お名前<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
               </label>
               <input
                 type="text"
@@ -342,17 +344,9 @@ export default function RequestWizard({ onComplete }: Props) {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">市区町村<span className="text-do ml-1">＊</span></label>
-              <input
-                type="text"
-                value={contact.city}
-                onChange={(e) => setContact({ ...contact, city: e.target.value })}
-                placeholder="例：さいたま市、川口市"
-                className="w-full border border-border rounded-lg px-3 py-2.5 text-sm text-sumi focus:outline-none focus:border-kincya"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">メールアドレス</label>
+              <label className="block text-xs font-medium text-sumi/70 mb-1">
+                メールアドレス<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
+              </label>
               <input
                 type="email"
                 value={contact.email}
@@ -362,7 +356,9 @@ export default function RequestWizard({ onComplete }: Props) {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-sumi/70 mb-1">電話番号</label>
+              <label className="block text-xs font-medium text-sumi/70 mb-1">
+                電話番号<span className="text-sumi/40 ml-1 font-normal">（任意）</span>
+              </label>
               <input
                 type="tel"
                 value={contact.phone}
