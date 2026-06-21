@@ -71,7 +71,7 @@ export default function PropertyManagementPage() {
                 },
                 {
                   challenge: "業者によって対応スピードにばらつきがある",
-                  solution: "退去連絡後、最短翌日の現地確認を目標に対応。対応スピードの安定が保証されます。",
+                  solution: "退去連絡後、最短翌日の現地確認を目標に対応している業者が掲載されています。見積もり依頼時にスピードをご確認ください。",
                 },
                 {
                   challenge: "複数物件の工事履歴・費用の管理が大変",

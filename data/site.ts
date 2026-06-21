@@ -8,7 +8,7 @@ export const SITE_CONFIG = {
   // 電話窓口は準備中。お問い合わせはフォームよりお願いします。
   tel: undefined as string | undefined,
   telRaw: undefined as string | undefined,
-  email: "info@example.com",
+  email: undefined as string | undefined,
   line: undefined as string | undefined,
   hours: "受付時間はお問い合わせフォームより24時間受付",
   area: "埼玉県全域",
