@@ -19,8 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${SITE_URL}/saitama`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
-    { url: `${SITE_URL}/search`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/saitama`, lastModified: now, changeFrequency: "weekly", priority: 0.95 },
+    { url: `${SITE_URL}/search`, lastModified: now, changeFrequency: "daily", priority: 0.85 },
     { url: `${SITE_URL}/categories`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/works`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/pro`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -60,19 +60,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // カテゴリ別 SEO ページ（正規URL /saitama/tatami/omotegae 等）
-  const categoryPages: MetadataRoute.Sitemap = SERVICE_CATEGORIES.filter((c) => c.href).map((cat) => ({
-    url: `${SITE_URL}${cat.href}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: cat.popular ? 0.85 : 0.75,
-  }));
+  // 畳カテゴリ（group=tatami）を最優先、omotegaeはpriority 1.0
+  const categoryPages: MetadataRoute.Sitemap = SERVICE_CATEGORIES.filter((c) => c.href).map((cat) => {
+    let priority = 0.7;
+    if (cat.group === "tatami" && cat.slug === "tatami-omotegae") priority = 1.0;
+    else if (cat.group === "tatami" && cat.popular) priority = 0.92;
+    else if (cat.group === "tatami") priority = 0.85;
+    else if (cat.popular) priority = 0.8;
+    return {
+      url: `${SITE_URL}${cat.href}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority,
+    };
+  });
+
+  // 主要市区町村の畳グループページ（「さいたま市 畳」「川口市 畳」等のロングテールSEO強化）
+  const TOP_CITIES = ["saitama-city", "kawaguchi", "kawagoe", "koshigaya", "tokorozawa", "kasukabe", "soka", "ageo", "kumagaya"];
+  const cityTatamiPages: MetadataRoute.Sitemap = SAITAMA_CITIES
+    .filter((c) => TOP_CITIES.includes(c.slug))
+    .map((city) => ({
+      url: `${SITE_URL}/saitama/${city.slug}/tatami`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.88,
+    }));
 
   // 市区町村トップ（/saitama/[city]）
   const cityPages: MetadataRoute.Sitemap = SAITAMA_CITIES.map((city) => ({
     url: `${SITE_URL}/saitama/${city.slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
-    priority: 0.75,
+    priority: TOP_CITIES.includes(city.slug) ? 0.82 : 0.72,
   }));
 
   // 市区町村 × 人気カテゴリ（/saitama/[city]/[category]）スラッグ使用
@@ -106,6 +125,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...staticPages,
+    ...cityTatamiPages,
     ...categoryPages,
     ...cityPages,
     ...cityCategoryPages,

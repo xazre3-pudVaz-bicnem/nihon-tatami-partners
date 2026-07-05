@@ -11,7 +11,11 @@ export const metadata: Metadata = {
   title: "埼玉県の畳表替え業者を料金・口コミで比較｜日本畳パートナーズ",
   description:
     "埼玉県で畳表替えを依頼できる業者を料金、口コミ、対応エリア、施工事例で比較。さいたま市、川口市、川越市、越谷市など埼玉県内の畳店に無料見積もり相談できます。",
-  keywords: ["畳表替え 埼玉", "畳 表替え 料金", "畳 業者", "さいたま市 畳表替え"],
+  keywords: [
+    "埼玉 畳", "埼玉 畳 表替え", "畳表替え 埼玉", "埼玉 畳業者",
+    "さいたま市 畳", "川口市 畳表替え", "川越市 畳", "越谷市 畳",
+    "畳 表替え 料金", "畳業者 比較",
+  ],
   alternates: {
     canonical: "https://nihon-tatami-partners.vercel.app/saitama/tatami/omotegae",
   },
