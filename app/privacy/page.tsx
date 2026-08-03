@@ -27,7 +27,7 @@ const SECTIONS = [
   },
   {
     title: "5. 個人情報の開示・訂正・削除",
-    body: "ご自身の個人情報の開示・訂正・削除をご希望の場合は、マイページから変更いただくか、info@nihontatami.jp へご連絡ください。本人確認を行った上で、合理的な期間内に対応します。",
+    body: "ご自身の個人情報の開示・訂正・削除をご希望の場合は、マイページから変更いただくか、info@cypress-all.co.jp へご連絡ください。本人確認を行った上で、合理的な期間内に対応します。",
   },
   {
     title: "6. セキュリティ",
@@ -67,7 +67,8 @@ export default function PrivacyPage() {
             <h2 className="text-base text-sumi mb-2" style={{ fontFamily: "var(--font-serif)" }}>8. お問い合わせ</h2>
             <p className="text-sm text-sumi/70 leading-relaxed">
               個人情報に関するお問い合わせは下記までご連絡ください。<br />
-              メールアドレス：info@nihontatami.jp
+              電話番号：090-2360-0052<br />
+              メールアドレス：info@cypress-all.co.jp
             </p>
           </section>
         </div>

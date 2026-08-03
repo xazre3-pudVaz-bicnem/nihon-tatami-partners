@@ -26,7 +26,7 @@ export default function AdminSettingsPage() {
               </div>
               <div>
                 <label className="block text-xs text-sumi/60 mb-1.5">お問い合わせメールアドレス</label>
-                <input type="email" defaultValue="info@nihontatami.jp" className="w-full border border-border text-sm px-3 py-2.5 focus:outline-none focus:border-ai" />
+                <input type="email" defaultValue="info@cypress-all.co.jp" className="w-full border border-border text-sm px-3 py-2.5 focus:outline-none focus:border-ai" />
               </div>
             </div>
           </section>

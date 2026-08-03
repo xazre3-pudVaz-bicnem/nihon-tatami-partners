@@ -73,7 +73,8 @@ export default function AboutPage() {
                 ["サービス名", "日本畳パートナー"],
                 ["運営", "株式会社 日本畳パートナー（仮）"],
                 ["所在地", "埼玉県さいたま市（サービス準備中）"],
-                ["お問い合わせ", "info@nihontatami.jp"],
+                ["電話番号", "090-2360-0052"],
+                ["メールアドレス", "info@cypress-all.co.jp"],
               ].map(([label, value]) => (
                 <tr key={label}>
                   <td className="py-2 pr-4 text-sumi/50 w-32 shrink-0">{label}</td>
